@@ -1,0 +1,145 @@
+/* Reset and Base Styles */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'JetBrains Mono', monospace;
+    line-height: 1.6;
+    min-height: 100vh;
+    overflow: hidden;
+}
+
+/* App Layout */
+.app-container {
+    display: flex;
+    flex-direction: column;
+    height: 100vh;
+    position: relative;
+}
+
+.content-area {
+    flex: 1;
+    overflow-y: auto;
+    padding: 2rem;
+    transition: height 0.3s ease;
+}
+
+/* Navigation Styles */
+nav {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1rem 0;
+    border-bottom: 1px solid var(--ctp-surface0);
+    margin-bottom: 2rem;
+}
+
+.nav-links {
+    display: flex;
+    gap: 1.5rem;
+}
+
+.nav-links a {
+    color: var(--ctp-subtext0);
+    text-decoration: none;
+    transition: color 0.2s;
+}
+
+.nav-links a:hover,
+.nav-links a.active {
+    color: var(--ctp-blue);
+}
+
+/* Terminal Styles */
+.terminal-container {
+    background-color: var(--ctp-mantle);
+    border-top: 1px solid var(--ctp-surface0);
+    height: 0;
+    overflow: hidden;
+    transition: height 0.3s ease;
+    width: 100%;
+    position: absolute;
+    bottom: 0;
+    left: 0;
+}
+
+.terminal-container.terminal-open {
+    height: 30vh;
+}
+
+.terminal-toggle {
+    position: absolute;
+    bottom: 0;
+    right: 1rem;
+    background: var(--ctp-surface0);
+    border: none;
+    color: var(--ctp-text);
+    padding: 0.5rem;
+    cursor: pointer;
+    border-radius: 5px 5px 0 0;
+    opacity: 0.7;
+    transition: opacity 0.2s;
+}
+
+.terminal-toggle:hover {
+    opacity: 1;
+}
+
+/* Typography */
+h1, h2, h3, h4, h5, h6 {
+    color: var(--ctp-lavender);
+    margin-bottom: 1rem;
+}
+
+a {
+    color: var(--ctp-blue);
+    text-decoration: none;
+}
+
+a:hover {
+    text-decoration: underline;
+}
+
+p {
+    margin-bottom: 1.5rem;
+}
+
+code {
+    background-color: var(--ctp-surface0);
+    padding: 0.2rem 0.4rem;
+    border-radius: 3px;
+    font-family: 'JetBrains Mono', monospace;
+}
+
+/* Media Queries for split screen on large displays */
+@media (min-width: 1080px) {
+    .app-container {
+        flex-direction: row;
+    }
+
+    .content-area {
+        flex: 2;
+        max-width: 70%;
+        height: 100vh;
+        border-right: 1px solid var(--ctp-surface0);
+    }
+
+    .terminal-container {
+        position: static;
+        flex: 1;
+        width: 30%;
+        height: 100vh;
+        border-top: none;
+    }
+
+    .terminal-container.terminal-open {
+        height: 100vh;
+    }
+
+    .terminal-toggle {
+        display: none;
+    }
+}

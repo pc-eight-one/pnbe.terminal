@@ -1,3 +1,255 @@
 ---
+import MainLayout from '../layouts/MainLayout.astro';
 
+// Get the path that wasn't found
+const path = Astro.url.pathname;
 ---
+
+<MainLayout title="404 - Page Not Found">
+    <div class="error-container">
+        <div class="terminal-screen">
+            <div class="terminal-header">
+                <span>terminal@pnbe.in: ~/404</span>
+                <div class="terminal-controls">
+                    <span class="terminal-minimize"></span>
+                    <span class="terminal-maximize"></span>
+                    <span class="terminal-close"></span>
+                </div>
+            </div>
+
+            <div class="terminal-body">
+                <div class="error-content">
+                    <!-- ASCII Art Error Message -->
+                    <pre class="ascii-art">
+
+          </pre>
+
+                    <div class="terminal-output">
+                        <p class="error-message"><span class="error-code">Error 404:</span> Page not found</p>
+                        <p class="path">The requested path <span class="path-code">"{path}"</span> could not be found.</p>
+
+                        <div class="command-history">
+                            <div class="command-line">
+                                <span class="prompt">guest@pnbe.in:~$</span> cd {path}
+                            </div>
+                            <div class="command-response error">
+                                bash: cd: {path}: No such file or directory
+                            </div>
+
+                            <div class="command-line">
+                                <span class="prompt">guest@pnbe.in:~$</span> locate {path.split('/').pop()}
+                            </div>
+                            <div class="command-response">
+                                Searching file system...
+                                No results found.
+                            </div>
+
+                            <div class="command-line">
+                                <span class="prompt">guest@pnbe.in:~$</span> ping pnbe.in
+                            </div>
+                            <div class="command-response success">
+                                PING pnbe.in (127.0.0.1): 56 data bytes
+64 bytes from 127.0.0.1: icmp_seq=0 ttl=64 time=0.027 ms
+64 bytes from 127.0.0.1: icmp_seq=1 ttl=64 time=0.023 ms
+--- pnbe.in ping statistics ---
+2 packets transmitted, 2 packets received, 0% packet loss
+                            </div>
+
+                            <div class="command-line">
+                                <span class="prompt">guest@pnbe.in:~$</span> ls -la /
+                            </div>
+                            <div class="command-response">
+total 40
+drwxr-xr-x  10 root root  4096 Mar 17 12:00 .
+drwxr-xr-x  10 root root  4096 Mar 17 12:00 ..
+drwxr-xr-x   2 root root  4096 Mar 17 12:00 <a href="/">home</a>
+drwxr-xr-x   2 root root  4096 Mar 17 12:00 <a href="/about">about</a>
+drwxr-xr-x   2 root root  4096 Mar 17 12:00 <a href="/projects">projects</a>
+drwxr-xr-x   2 root root  4096 Mar 17 12:00 <a href="/blog">blog</a>
+drwxr-xr-x   2 root root  4096 Mar 17 12:00 <a href="/contact">contact</a>
+                            </div>
+
+                            <div class="command-line">
+                                <span class="prompt">guest@pnbe.in:~$</span> <span class="blinking-cursor">|</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</MainLayout>
+
+<style>
+    .error-container {
+        max-width: 900px;
+        margin: 0 auto;
+        padding: 2rem 1rem;
+    }
+
+    .terminal-screen {
+        background-color: var(--ctp-mantle);
+        border-radius: 8px;
+        overflow: hidden;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+        border: 1px solid var(--ctp-surface0);
+    }
+
+    .terminal-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 0.5rem 1rem;
+        background-color: var(--ctp-crust);
+        border-bottom: 1px solid var(--ctp-surface0);
+        font-family: 'JetBrains Mono', monospace;
+        font-size: 0.9rem;
+        color: var(--ctp-subtext0);
+    }
+
+    .terminal-controls {
+        display: flex;
+        gap: 0.5rem;
+    }
+
+    .terminal-minimize,
+    .terminal-maximize,
+    .terminal-close {
+        display: inline-block;
+        width: 12px;
+        height: 12px;
+        border-radius: 50%;
+    }
+
+    .terminal-minimize {
+        background-color: var(--ctp-yellow);
+    }
+
+    .terminal-maximize {
+        background-color: var(--ctp-green);
+    }
+
+    .terminal-close {
+        background-color: var(--ctp-red);
+    }
+
+    .terminal-body {
+        padding: 1.5rem;
+        font-family: 'JetBrains Mono', monospace;
+        color: var(--ctp-text);
+        line-height: 1.6;
+    }
+
+    .ascii-art {
+        color: var(--ctp-red);
+        font-size: 0.7rem;
+        line-height: 1.2;
+        margin-bottom: 2rem;
+        white-space: pre;
+        overflow-x: auto;
+    }
+
+    @media (min-width: 768px) {
+        .ascii-art {
+            font-size: 0.9rem;
+        }
+    }
+
+    .terminal-output {
+        font-size: 0.9rem;
+    }
+
+    .error-message {
+        font-size: 1.2rem;
+        margin-bottom: 0.5rem;
+        color: var(--ctp-text);
+    }
+
+    .error-code {
+        color: var(--ctp-red);
+        font-weight: bold;
+    }
+
+    .path {
+        margin-bottom: 1.5rem;
+        color: var(--ctp-subtext0);
+    }
+
+    .path-code {
+        color: var(--ctp-mauve);
+        background-color: var(--ctp-surface0);
+        padding: 0.2rem 0.4rem;
+        border-radius: 4px;
+    }
+
+    .command-history {
+        background-color: var(--ctp-crust);
+        border-radius: 5px;
+        padding: 1rem;
+        margin-top: 1.5rem;
+    }
+
+    .command-line {
+        color: var(--ctp-text);
+        margin-bottom: 0.25rem;
+    }
+
+    .prompt {
+        color: var(--ctp-green);
+        margin-right: 0.5rem;
+    }
+
+    .command-response {
+        color: var(--ctp-subtext0);
+        padding-left: 1rem;
+        margin-bottom: 1rem;
+        white-space: pre-wrap;
+        word-wrap: break-word;
+    }
+
+    .error {
+        color: var(--ctp-red);
+    }
+
+    .success {
+        color: var(--ctp-green);
+    }
+
+    .command-response a {
+        color: var(--ctp-blue);
+        text-decoration: none;
+        transition: color 0.2s;
+    }
+
+    .command-response a:hover {
+        color: var(--ctp-lavender);
+        text-decoration: underline;
+    }
+
+    .blinking-cursor {
+        display: inline-block;
+        width: 0.5rem;
+        height: 1rem;
+        background-color: var(--ctp-mauve);
+        animation: blink 1s step-end infinite;
+    }
+
+    @keyframes blink {
+        0%, 100% { opacity: 1; }
+        50% { opacity: 0; }
+    }
+
+    @media (max-width: 600px) {
+        .terminal-screen {
+            font-size: 0.8rem;
+        }
+
+        .terminal-body {
+            padding: 1rem;
+        }
+
+        .ascii-art {
+            font-size: 0.4rem;
+        }
+    }
+</style>

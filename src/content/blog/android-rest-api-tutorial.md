@@ -1,3 +1,10 @@
+---
+title: 'Android REST API Calls with Progress Indicators: A Complete Guide'
+description: 'Learn how to make API calls from and Android app and use progress indicators.'
+pubDate: '2025-03-16'
+tags: ['android', 'rest-api', 'retrofit', 'volley', 'rxjava', 'java']
+id: c20250316
+---
 # Android REST API Calls with Progress Indicators: A Complete Guide
 
 ## Introduction

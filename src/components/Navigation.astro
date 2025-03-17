@@ -1,0 +1,30 @@
+---
+const pathname = Astro.url.pathname;
+const currentPath = pathname.endsWith('/') ? pathname.slice(0, -1) : pathname;
+
+const isActive = (path) => currentPath === path || (path !== '/' && currentPath.startsWith(path));
+
+const navItems = [
+    { path: '/', label: 'Home' },
+    { path: '/blog', label: 'Blog' },
+    { path: '/projects', label: 'Projects' },
+    { path: '/contact', label: 'Contact' },
+    { path: '/about', label: 'About' },
+];
+---
+
+<nav>
+    <div class="logo">
+        <a href="/">~/terminal@pnbe</a>
+    </div>
+    <div class="nav-links">
+        {navItems.map(item => (
+                <a
+                        href={item.path}
+                        class={isActive(item.path) ? 'active' : ''}
+                >
+                    {item.label}
+                </a>
+        ))}
+    </div>
+</nav>

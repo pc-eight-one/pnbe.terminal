@@ -1,0 +1,40 @@
+---
+import '../styles/global.css';
+import '../styles/catppuccin-theme.css';
+import Terminal from '../components/Terminal.jsx';
+import ToggleTerminal from '../components/ToggleTerminal.jsx';
+import Navigation from '../components/Navigation.astro';
+
+const { title } = Astro.props;
+---
+
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>{title} | Terminal Website</title>
+</head>
+<body>
+<div class="app-container">
+    <div class="content-area">
+        <Navigation />
+        <main>
+            <slot />
+        </main>
+    </div>
+    <Terminal client:load />
+    <ToggleTerminal client:load />
+</div>
+
+<script>
+    // Handle keyboard shortcut to toggle terminal
+    document.addEventListener('keydown', (e) => {
+        if (e.ctrlKey && e.key === '`') {
+            const terminal = document.querySelector('.terminal-container');
+            terminal.classList.toggle('terminal-open');
+            e.preventDefault();
+        }
+    });
+</script>
+</body>
+</html>

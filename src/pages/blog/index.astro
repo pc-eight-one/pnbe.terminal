@@ -1,39 +1,42 @@
 ---
 import MainLayout from '../../layouts/MainLayout.astro';
-import {getCollection} from 'astro:content';
+import { getCollection } from 'astro:content';
 
-// Get all blog posts and sort by date
+// Get all blog posts
 const posts = await getCollection('blog');
+
+// Sort posts by date (newest first)
 const sortedPosts = posts.sort(
     (a, b) => new Date(b.data.pubDate).getTime() - new Date(a.data.pubDate).getTime()
 );
+
+// Function to get post ID (use custom ID if available, otherwise slug)
+const getPostId = (post) => {
+    return post.data.id || post.slug;
+};
+
+// Check if post has tags
+const hasTags = (post) => {
+    return post.data.tags && Array.isArray(post.data.tags) && post.data.tags.length > 0;
+};
 ---
 
 <MainLayout title="Blog">
     <div class="blog-container">
-        <h1><span class="prompt">~/blog</span> Latest Posts</h1>
+        <h1><span class="prompt">~/blog</span></h1>
 
         <p class="intro">
-            Thoughts, tutorials, and tech explorations. Browse posts below or use the terminal to navigate with <code>view-post
-            [id]</code>.
+            Thoughts, tutorials, and tech explorations. Browse posts below or use the terminal to navigate with <code>view-post [id]</code>.
         </p>
 
-        <div class="terminal-block terminal-output">
-      <pre>
-$ ls -la ~/blog
-total {sortedPosts.length}
-          {sortedPosts.map((post, index) => (
-              `[${post.slug}] ${post.data.title} - ${new Date(post.data.pubDate).toLocaleDateString()} - ${post.data.description}`
-          )).join('\n')}
-      </pre>
-        </div>
+
 
         <div class="blog-grid">
-            {sortedPosts.map((post, index) => (
+            {sortedPosts.map((post) => (
                     <article class="blog-card">
                         <div class="blog-meta">
                             <span class="post-date">{new Date(post.data.pubDate).toLocaleDateString()}</span>
-                            <span class="post-id">ID: {post.slug}</span>
+                            <span class="post-id">ID: {getPostId(post)}</span>
                         </div>
 
                         <h2 class="post-title">
@@ -42,11 +45,13 @@ total {sortedPosts.length}
 
                         <p class="post-excerpt">{post.data.description}</p>
 
-                        <div class="post-tags">
-                            {post.data.tags.map(tag => (
-                                    <span class="post-tag">#{tag}</span>
-                            ))}
-                        </div>
+                        {hasTags(post) && (
+                                <div class="post-tags">
+                                    {post.data.tags.map((tag) => (
+                                            <span class="post-tag">#{tag}</span>
+                                    ))}
+                                </div>
+                        )}
 
                         <a href={`/blog/${post.slug}`} class="read-more">
                             <span class="prompt">$</span> cat ~/blog/{post.slug}

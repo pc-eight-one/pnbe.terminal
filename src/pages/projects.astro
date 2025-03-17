@@ -1,0 +1,202 @@
+---
+import MainLayout from '../layouts/MainLayout.astro';
+
+// Project data
+const projects = [
+    {
+        title: "Terminal Website",
+        description: "A personal website with Linux terminal-inspired design using Astro and React.",
+        tags: ["Astro", "React", "CSS", "Terminal"],
+        image: "/src/assets/project-showcase-terminal-pnbe.png",
+        github: "https://github.com/yourusername/terminal-website",
+        demo: null
+    },
+    {
+        title: "Java Web Components",
+        description: "Web components library for building Java-based web applications with ease.",
+        tags: ["java", "web-components", "spring-boot"],
+        image: "/src/assets/project-showcase-java-web-components.jpeg",
+        github: "https://github.com/pc-eight-one/java-web-ui-components",
+        demo: null
+    },
+    {
+        title: "Navigation CLI",
+        description: "Command line tool for navigating between directories and files in Linux machines in an interactive way",
+        tags: ["shell-script"],
+        image: "/src/assets/project-showcase-navrc-shell-script-output.png",
+        github: "https://gist.github.com/pc-eight-one/a0d7c4274f532f212bf7d7fd06daac91",
+        demo: null
+    },
+];
+---
+
+<MainLayout title="Projects">
+    <div class="projects-container">
+        <h1><span class="prompt">~/projects</span></h1>
+
+        <p class="intro">
+            Here's a selection of projects I've worked on. Each one represents
+            a unique challenge and learning opportunity.
+        </p>
+
+        <div class="projects-grid">
+            {projects.map((project, index) => (
+                    <div class="project-card">
+                        <div class="project-image">
+                            <img src={project.image} alt={project.title}/>
+                        </div>
+                        <div class="project-content">
+                            <h2>{project.title}</h2>
+                            <p>{project.description}</p>
+
+                            <div class="project-tags">
+                                {project.tags.map(tag => (
+                                        <span class="project-tag">{tag}</span>
+                                ))}
+                            </div>
+
+                            <div class="project-links">
+                                <a href={project.github} class="project-link github">
+                                    GitHub
+                                </a>
+                                {project.demo && (
+                                        <a href={project.demo} class="project-link demo">
+                                            Live Demo
+                                        </a>
+                                )}
+                            </div>
+                        </div>
+                    </div>
+            ))}
+        </div>
+    </div>
+</MainLayout>
+
+<style>
+    .projects-container {
+        max-width: 1000px;
+    }
+
+    .prompt {
+        color: var(--ctp-green);
+        font-weight: bold;
+    }
+
+    .intro {
+        margin-bottom: 2rem;
+    }
+
+    .projects-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+        gap: 2rem;
+        margin: 2rem 0;
+    }
+
+    .project-card {
+        background: var(--ctp-surface0);
+        border-radius: 8px;
+        overflow: hidden;
+        transition: transform 0.3s, box-shadow 0.3s;
+        height: 100%;
+        display: flex;
+        flex-direction: column;
+    }
+
+    .project-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+    }
+
+    .project-image {
+        width: 100%;
+        aspect-ratio: 16 / 9;
+        overflow: hidden;
+    }
+
+    .project-image img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        transition: transform 0.5s;
+    }
+
+    .project-card:hover .project-image img {
+        transform: scale(1.05);
+    }
+
+    .project-content {
+        padding: 1.5rem;
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+    }
+
+    .project-content h2 {
+        color: var(--ctp-blue);
+        margin-bottom: 0.75rem;
+        font-size: 1.4rem;
+    }
+
+    .project-tags {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.5rem;
+        margin: 1rem 0;
+    }
+
+    .project-tag {
+        background: var(--ctp-surface1);
+        color: var(--ctp-lavender);
+        padding: 0.25rem 0.6rem;
+        border-radius: 4px;
+        font-size: 0.8rem;
+    }
+
+    .project-links {
+        margin-top: auto;
+        display: flex;
+        gap: 1rem;
+    }
+
+    .project-link {
+        padding: 0.5rem 1rem;
+        border-radius: 4px;
+        text-decoration: none;
+        font-weight: bold;
+        font-size: 0.9rem;
+        transition: background 0.2s;
+    }
+
+    .project-link.github {
+        background: var(--ctp-surface1);
+        color: var(--ctp-text);
+    }
+
+    .project-link.github:hover {
+        background: var(--ctp-surface2);
+    }
+
+    .project-link.demo {
+        background: var(--ctp-blue);
+        color: var(--ctp-mantle);
+    }
+
+    .project-link.demo:hover {
+        background: var(--ctp-lavender);
+    }
+
+    .terminal-block {
+        margin: 2rem 0;
+        padding: 1.5rem;
+        border-radius: 5px;
+        background-color: var(--ctp-surface0);
+    }
+
+    /* Responsive adjustments */
+    @media (max-width: 768px) {
+        .projects-grid {
+            grid-template-columns: 1fr;
+        }
+    }
+</style>

@@ -1,3 +1,10 @@
+---
+title: 'Modern Multi-Screen Android Architecture Guide Using Java'
+description: 'Learn how to work with Android app architecture, including UI, presentation, domain, and data layers, using Java.'
+pubDate: '2025-03-16'
+tags: ['android', 'java', 'architecture', 'mvvm', 'clean-architecture', 'room', 'retrofit']
+id: 'b25250316'
+---
 # Modern Multi-Screen Android Architecture Guide Using Java
 
 ## Introduction

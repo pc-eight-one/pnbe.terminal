@@ -15,6 +15,11 @@ export async function getStaticPaths() {
 const { entry } = Astro.props;
 const { Content } = await entry.render();
 
+// Function to get post ID (use custom ID if available, otherwise slug)
+const getPostId = (post) => {
+    return post.data.id || post.slug;
+};
+
 // Get previous and next posts for navigation
 const allPosts = await getCollection('blog');
 const sortedPosts = allPosts.sort(
@@ -23,6 +28,11 @@ const sortedPosts = allPosts.sort(
 const currentIndex = sortedPosts.findIndex(post => post.slug === entry.slug);
 const prevPost = currentIndex < sortedPosts.length - 1 ? sortedPosts[currentIndex + 1] : null;
 const nextPost = currentIndex > 0 ? sortedPosts[currentIndex - 1] : null;
+
+// Check if post has tags
+const hasTags = (post) => {
+    return post.data.tags && Array.isArray(post.data.tags) && post.data.tags.length > 0;
+};
 ---
 
 <MainLayout title={entry.data.title}>
@@ -30,16 +40,16 @@ const nextPost = currentIndex > 0 ? sortedPosts[currentIndex - 1] : null;
         <div class="post-header">
             <div class="post-meta">
                 <span class="post-date">{new Date(entry.data.pubDate).toLocaleDateString()}</span>
-                <span class="post-id">ID: {entry.slug}</span>
+                <span class="post-id">ID: {getPostId(entry)}</span>
             </div>
 
             <h1 class="post-title">{entry.data.title}</h1>
 
-            <div class="post-tags">
-                {entry.data.tags.map(tag => (
-                        <span class="post-tag">#{tag}</span>
-                ))}
-            </div>
+            {hasTags(entry) &&
+                    <div class="post-tags">
+                        {entry.data.tags.map(tag => <span class="post-tag">#{tag}</span>)}
+                    </div>
+            }
         </div>
 
         <div class="terminal-block">
@@ -58,23 +68,23 @@ const nextPost = currentIndex > 0 ? sortedPosts[currentIndex - 1] : null;
         </div>
 
         <div class="post-navigation">
-            {prevPost && (
+            {prevPost &&
                     <a href={`/blog/${prevPost.slug}`} class="nav-prev">
                         <span class="nav-label"><span class="prompt">$</span> cd prev</span>
                         <span class="nav-title">{prevPost.data.title}</span>
                     </a>
-            )}
+            }
 
             <a href="/blog" class="nav-home">
                 <span class="prompt">$</span> cd ~/blog
             </a>
 
-            {nextPost && (
+            {nextPost &&
                     <a href={`/blog/${nextPost.slug}`} class="nav-next">
                         <span class="nav-label"><span class="prompt">$</span> cd next</span>
                         <span class="nav-title">{nextPost.data.title}</span>
                     </a>
-            )}
+            }
         </div>
     </article>
 </MainLayout>
@@ -115,6 +125,7 @@ const nextPost = currentIndex > 0 ? sortedPosts[currentIndex - 1] : null;
         display: flex;
         flex-wrap: wrap;
         gap: 0.5rem;
+        margin-bottom: 1rem;
     }
 
     .post-tag {

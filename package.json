@@ -9,6 +9,13 @@
     "astro": "astro"
   },
   "dependencies": {
-    "astro": "^5.5.2"
+    "@astrojs/markdown-remark": "^6.3.0",
+    "@astrojs/react": "^4.2.1",
+    "@astrojs/vercel": "^8.1.2",
+    "@types/react": "^19.0.10",
+    "@types/react-dom": "^19.0.4",
+    "astro": "^5.5.2",
+    "react": "^19.0.0",
+    "react-dom": "^19.0.0"
   }
 }

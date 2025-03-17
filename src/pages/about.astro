@@ -1,0 +1,167 @@
+---
+import MainLayout from '../layouts/MainLayout.astro';
+---
+
+<MainLayout title="About">
+    <div class="about-container">
+        <h1><span class="prompt">~/about</span> Prashant</h1>
+
+        <div class="about-section">
+            <h2><span class="prompt">$</span> whoami</h2>
+            <p>
+                I'm a backend Java developer with a passion for building performant and scalable applications. I have
+                interest in mobile development and recently i have been working on Android applications. I love linux
+                and use Zorin OS (PRO) as my daily driver. I love creating personal tools using shell scripts and Java.
+            </p>
+
+            <div class="terminal-output">
+        <pre>
+$ cat ~/about/skills.txt
+- Backend Development (Java, Spring boot, Kotlin)
+- Frontend Development (Javascript, Typescript, Angular, Vue, React)
+- Mobile Development (Android, Kotlin)
+- Shell scripting (Bash)
+- Software Architecture</pre>
+            </div>
+        </div>
+
+        <div class="about-section">
+            <h2><span class="prompt">$</span> history | grep experience</h2>
+            <div class="experience-block">
+                <h3>Senior Software Developer</h3>
+                <div class="meta">Collaborative Minds • 2024 - Present</div>
+                <p>Backend and mobile app developer.</p>
+            </div>
+
+            <div class="experience-block">
+                <h3>Senior Engineer</h3>
+                <div class="meta">Codapayments • 2019 - 2024</div>
+                <p>Backend developer working on Spring boot, Java, Kotlin. Designed Kotlin based API integration testing DSL and supporting framework</p>
+            </div>
+
+            <div class="experience-block">
+                <h3>Senior Developer</h3>
+                <div class="meta">Societe Generale • 2015 - 2017</div>
+                <p>Worked on auditing application for the backoffice using spring boot and Java</p>
+            </div>
+
+            <div class="experience-block">
+                <h3>Developer</h3>
+                <div class="meta">BNP Paribas • 2014 - 2015</div>
+                <p>Remote directory access and management rule engine using spring boot, Java, jQuery</p>
+            </div>
+
+            <div class="experience-block">
+                <h3>Developer</h3>
+                <div class="meta">HCL Technologies • 2012 - 2014</div>
+                <p>Cisco's ASDM Desktop application using Core Java</p>
+            </div>
+        </div>
+
+        <div class="about-section">
+            <h2><span class="prompt">$</span> echo $INTERESTS</h2>
+            <ul class="interests-list">
+                <li><span class="interest-tag">Open Source</span></li>
+                <li><span class="interest-tag">Linux</span></li>
+                <li><span class="interest-tag">Web Performance</span></li>
+                <li><span class="interest-tag">Typography</span></li>
+                <li><span class="interest-tag">Terminal Customization</span></li>
+                <li><span class="interest-tag">Mechanical Keyboards</span></li>
+            </ul>
+        </div>
+
+        <div class="about-section">
+            <h2><span class="prompt">$</span> ./system_info.sh</h2>
+            <pre>
+System Information - Sun Mar 16 20:23:48 IST 2025
++--------------------+------------------------------------------------------------+
+| Hostname           | nix                                                        |
+| Username           | **                                                         |
++--------------------+------------------------------------------------------------+
+| OS                 | Zorin OS 17.2                                              |
+| Kernel             | 6.8.0-52-generic                                           |
+| Uptime             | up 8 hours, 8 minutes                                      |
++--------------------+------------------------------------------------------------+
+| CPU Model          | AMD Ryzen 5 3500X 6-Core Processor                         |
+| CPU Cores          | 6                                                          |
++--------------------+------------------------------------------------------------+
+| Total RAM          | 31Gi                                                       |
+| Used RAM           | 11Gi                                                       |
+| Free RAM           | 12Gi                                                       |
++--------------------+------------------------------------------------------------+
+| Shell              | bash (GNU bash, version 5.1.16(1)-release (x86_64-pc-linux-gnu)) |
++--------------------+------------------------------------------------------------+
+
+Detailed Hardware Information:
+To view detailed hardware information, run: sudo lshw -short
+Script executed successfully.
+            </pre>
+        </div>
+    </div>
+</MainLayout>
+
+<style>
+    .about-container {
+        max-width: 800px;
+    }
+
+    .prompt {
+        color: var(--ctp-green);
+        font-weight: bold;
+    }
+
+    .about-section {
+        margin: 2rem 0;
+        padding-bottom: 2rem;
+        border-bottom: 1px dashed var(--ctp-overlay0);
+    }
+
+    .about-section:last-child {
+        border-bottom: none;
+    }
+
+    .terminal-output {
+        background-color: var(--ctp-crust);
+        border-radius: 5px;
+        padding: 1rem;
+        margin: 1rem 0;
+        font-family: 'JetBrains Mono', monospace;
+    }
+
+    .terminal-output pre {
+        margin: 0;
+        color: var(--ctp-text);
+        white-space: pre-wrap;
+    }
+
+    .experience-block {
+        margin: 1.5rem 0;
+    }
+
+    .experience-block h3 {
+        margin-bottom: 0.25rem;
+        color: var(--ctp-blue);
+    }
+
+    .meta {
+        color: var(--ctp-subtext0);
+        font-size: 0.9rem;
+        margin-bottom: 0.5rem;
+    }
+
+    .interests-list {
+        list-style: none;
+        padding: 0;
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.75rem;
+    }
+
+    .interest-tag {
+        background-color: var(--ctp-surface1);
+        color: var(--ctp-lavender);
+        padding: 0.4rem 0.8rem;
+        border-radius: 20px;
+        font-size: 0.9rem;
+    }
+</style>

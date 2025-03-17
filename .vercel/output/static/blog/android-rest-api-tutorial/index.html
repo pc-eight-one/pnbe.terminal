@@ -1,0 +1,904 @@
+<!DOCTYPE html><html lang="en"> <head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>Android REST API Calls with Progress Indicators: A Complete Guide | Terminal Website</title><link rel="stylesheet" href="/_astro/about.OuLweBnF.css">
+<link rel="stylesheet" href="/_astro/_slug_.DUFLA0uw.css"></head> <body> <div class="app-container"> <div class="content-area"> <nav> <div class="logo"> <a href="/">~/terminal@pnbe</a> </div> <div class="nav-links"> <a href="/" class> Home </a><a href="/blog" class="active"> Blog </a><a href="/projects" class> Projects </a><a href="/contact" class> Contact </a><a href="/about" class> About </a> </div> </nav> <main>  <article class="blog-post" data-astro-cid-4sn4zg3r> <div class="post-header" data-astro-cid-4sn4zg3r> <div class="post-meta" data-astro-cid-4sn4zg3r> <span class="post-date" data-astro-cid-4sn4zg3r>16/3/2025</span> <span class="post-id" data-astro-cid-4sn4zg3r>ID: c20250316</span> </div> <h1 class="post-title" data-astro-cid-4sn4zg3r>Android REST API Calls with Progress Indicators: A Complete Guide</h1> <div class="post-tags" data-astro-cid-4sn4zg3r> <span class="post-tag" data-astro-cid-4sn4zg3r>#android</span><span class="post-tag" data-astro-cid-4sn4zg3r>#rest-api</span><span class="post-tag" data-astro-cid-4sn4zg3r>#retrofit</span><span class="post-tag" data-astro-cid-4sn4zg3r>#volley</span><span class="post-tag" data-astro-cid-4sn4zg3r>#rxjava</span><span class="post-tag" data-astro-cid-4sn4zg3r>#java</span> </div> </div> <div class="terminal-block" data-astro-cid-4sn4zg3r> <div class="terminal-header" data-astro-cid-4sn4zg3r> <span data-astro-cid-4sn4zg3r>~/blog/android-rest-api-tutorial</span> <div class="terminal-controls" data-astro-cid-4sn4zg3r> <span class="terminal-minimize" data-astro-cid-4sn4zg3r></span> <span class="terminal-maximize" data-astro-cid-4sn4zg3r></span> <span class="terminal-close" data-astro-cid-4sn4zg3r></span> </div> </div> <div class="blog-content" data-astro-cid-4sn4zg3r> <h1 id="android-rest-api-calls-with-progress-indicators-a-complete-guide">Android REST API Calls with Progress Indicators: A Complete Guide</h1>
+<h2 id="introduction">Introduction</h2>
+<p>Making network requests to fetch data from a remote server is a fundamental aspect of most modern Android applications. Properly handling these requests while providing visual feedback to users through progress indicators is essential for a positive user experience.</p>
+<p>This tutorial covers:</p>
+<ul>
+<li>Different approaches for making REST API calls in Android</li>
+<li>Implementing progress indicators during network operations</li>
+<li>Best practices for error handling and response processing</li>
+<li>Structuring your code for maintainability and testability</li>
+</ul>
+<h2 id="table-of-contents">Table of Contents</h2>
+<ol>
+<li><a href="#understanding-rest-api-calls-in-android">Understanding REST API Calls in Android</a></li>
+<li><a href="#setting-up-the-project">Setting Up the Project</a></li>
+<li><a href="#approach-1-using-retrofit-with-callbacks">Approach 1: Using Retrofit with Callbacks</a></li>
+<li><a href="#approach-2-using-retrofit-with-rxjava">Approach 2: Using Retrofit with RxJava</a></li>
+<li><a href="#approach-3-using-retrofit-with-coroutines-kotlin">Approach 3: Using Retrofit with Coroutines (Kotlin)</a></li>
+<li><a href="#approach-4-using-volley">Approach 4: Using Volley</a></li>
+<li><a href="#different-types-of-progress-indicators">Different Types of Progress Indicators</a></li>
+<li><a href="#implementing-a-loading-state-pattern">Implementing a Loading State Pattern</a></li>
+<li><a href="#handling-configuration-changes">Handling Configuration Changes</a></li>
+<li><a href="#caching-strategies">Caching Strategies</a></li>
+<li><a href="#comprehensive-example">Comprehensive Example</a></li>
+<li><a href="#best-practices">Best Practices</a></li>
+<li><a href="#conclusion">Conclusion</a></li>
+</ol>
+<h2 id="understanding-rest-api-calls-in-android">Understanding REST API Calls in Android</h2>
+<p>REST (Representational State Transfer) is an architectural style for designing networked applications. RESTful APIs use HTTP requests to perform CRUD (Create, Read, Update, Delete) operations on resources.</p>
+<p>In Android, you have several options for making REST API calls:</p>
+<ol>
+<li><strong>Retrofit</strong>: A type-safe HTTP client that simplifies API communication</li>
+<li><strong>Volley</strong>: A networking library by Google that makes networking faster and easier</li>
+<li><strong>OkHttp</strong>: A powerful HTTP client that can be used directly or as the foundation for other libraries</li>
+<li><strong>HttpURLConnection</strong>: The basic Java API for HTTP connections</li>
+</ol>
+<p>For modern Android development, Retrofit has become the de facto standard due to its type safety, ease of use, and extensive features. It uses OkHttp under the hood for efficient HTTP operations.</p>
+<h2 id="setting-up-the-project">Setting Up the Project</h2>
+<p>Let’s start by setting up a basic Android project with the necessary dependencies:</p>
+<h3 id="add-permissions">Add Permissions</h3>
+<p>In your <code>AndroidManifest.xml</code>, add the internet permission:</p>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8; overflow-x: auto;" tabindex="0" data-language="xml"><code><span class="line"><span style="color:#E1E4E8">&#x3C;</span><span style="color:#85E89D">manifest</span><span style="color:#B392F0"> xmlns:android</span><span style="color:#E1E4E8">=</span><span style="color:#9ECBFF">"http://schemas.android.com/apk/res/android"</span></span>
+<span class="line"><span style="color:#B392F0">    package</span><span style="color:#E1E4E8">=</span><span style="color:#9ECBFF">"com.example.restapidemo"</span><span style="color:#E1E4E8">></span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#E1E4E8">    &#x3C;</span><span style="color:#85E89D">uses-permission</span><span style="color:#B392F0"> android:name</span><span style="color:#E1E4E8">=</span><span style="color:#9ECBFF">"android.permission.INTERNET"</span><span style="color:#E1E4E8"> /></span></span>
+<span class="line"><span style="color:#E1E4E8">    </span></span>
+<span class="line"><span style="color:#E1E4E8">    &#x3C;</span><span style="color:#85E89D">application</span></span>
+<span class="line"><span style="color:#B392F0">        android:allowBackup</span><span style="color:#E1E4E8">=</span><span style="color:#9ECBFF">"true"</span></span>
+<span class="line"><span style="color:#B392F0">        android:icon</span><span style="color:#E1E4E8">=</span><span style="color:#9ECBFF">"@mipmap/ic_launcher"</span></span>
+<span class="line"><span style="color:#B392F0">        android:label</span><span style="color:#E1E4E8">=</span><span style="color:#9ECBFF">"@string/app_name"</span></span>
+<span class="line"><span style="color:#B392F0">        android:roundIcon</span><span style="color:#E1E4E8">=</span><span style="color:#9ECBFF">"@mipmap/ic_launcher_round"</span></span>
+<span class="line"><span style="color:#B392F0">        android:supportsRtl</span><span style="color:#E1E4E8">=</span><span style="color:#9ECBFF">"true"</span></span>
+<span class="line"><span style="color:#B392F0">        android:theme</span><span style="color:#E1E4E8">=</span><span style="color:#9ECBFF">"@style/AppTheme"</span><span style="color:#E1E4E8">></span></span>
+<span class="line"><span style="color:#6A737D">        &#x3C;!-- Activities go here --></span></span>
+<span class="line"><span style="color:#E1E4E8">    &#x3C;/</span><span style="color:#85E89D">application</span><span style="color:#E1E4E8">></span></span>
+<span class="line"><span style="color:#E1E4E8">&#x3C;/</span><span style="color:#85E89D">manifest</span><span style="color:#E1E4E8">></span></span></code></pre>
+<h3 id="add-dependencies">Add Dependencies</h3>
+<p>In your app-level <code>build.gradle</code> file, add the following dependencies:</p>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8; overflow-x: auto;" tabindex="0" data-language="plaintext"><code><span class="line"><span>dependencies {</span></span>
+<span class="line"><span>    // Retrofit</span></span>
+<span class="line"><span>    implementation 'com.squareup.retrofit2:retrofit:2.9.0'</span></span>
+<span class="line"><span>    implementation 'com.squareup.retrofit2:converter-gson:2.9.0'</span></span>
+<span class="line"><span>    </span></span>
+<span class="line"><span>    // OkHttp Logging Interceptor for debugging</span></span>
+<span class="line"><span>    implementation 'com.squareup.okhttp3:logging-interceptor:4.9.1'</span></span>
+<span class="line"><span>    </span></span>
+<span class="line"><span>    // Gson for JSON parsing</span></span>
+<span class="line"><span>    implementation 'com.google.code.gson:gson:2.8.8'</span></span>
+<span class="line"><span>    </span></span>
+<span class="line"><span>    // Optional: RxJava for reactive programming</span></span>
+<span class="line"><span>    implementation 'io.reactivex.rxjava3:rxjava:3.1.0'</span></span>
+<span class="line"><span>    implementation 'io.reactivex.rxjava3:rxandroid:3.0.0'</span></span>
+<span class="line"><span>    implementation 'com.squareup.retrofit2:adapter-rxjava3:2.9.0'</span></span>
+<span class="line"><span>    </span></span>
+<span class="line"><span>    // Optional: Volley</span></span>
+<span class="line"><span>    implementation 'com.android.volley:volley:1.2.1'</span></span>
+<span class="line"><span>}</span></span></code></pre>
+<h2 id="approach-1-using-retrofit-with-callbacks">Approach 1: Using Retrofit with Callbacks</h2>
+<p>Retrofit with callbacks is the simplest approach for handling REST API calls.</p>
+<h3 id="step-1-define-the-data-model">Step 1: Define the Data Model</h3>
+<p>Create a class to represent the data you’ll receive from the API:</p>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8; overflow-x: auto;" tabindex="0" data-language="java"><code><span class="line"><span style="color:#F97583">public</span><span style="color:#F97583"> class</span><span style="color:#B392F0"> User</span><span style="color:#E1E4E8"> {</span></span>
+<span class="line"><span style="color:#F97583">    private</span><span style="color:#F97583"> int</span><span style="color:#E1E4E8"> id;</span></span>
+<span class="line"><span style="color:#F97583">    private</span><span style="color:#E1E4E8"> String name;</span></span>
+<span class="line"><span style="color:#F97583">    private</span><span style="color:#E1E4E8"> String email;</span></span>
+<span class="line"><span style="color:#E1E4E8">    </span></span>
+<span class="line"><span style="color:#6A737D">    // Getters and setters</span></span>
+<span class="line"><span style="color:#F97583">    public</span><span style="color:#F97583"> int</span><span style="color:#B392F0"> getId</span><span style="color:#E1E4E8">() { </span><span style="color:#F97583">return</span><span style="color:#E1E4E8"> id; }</span></span>
+<span class="line"><span style="color:#F97583">    public</span><span style="color:#F97583"> void</span><span style="color:#B392F0"> setId</span><span style="color:#E1E4E8">(</span><span style="color:#F97583">int</span><span style="color:#FFAB70"> id</span><span style="color:#E1E4E8">) { </span><span style="color:#79B8FF">this</span><span style="color:#E1E4E8">.id </span><span style="color:#F97583">=</span><span style="color:#E1E4E8"> id; }</span></span>
+<span class="line"><span style="color:#E1E4E8">    </span></span>
+<span class="line"><span style="color:#F97583">    public</span><span style="color:#E1E4E8"> String </span><span style="color:#B392F0">getName</span><span style="color:#E1E4E8">() { </span><span style="color:#F97583">return</span><span style="color:#E1E4E8"> name; }</span></span>
+<span class="line"><span style="color:#F97583">    public</span><span style="color:#F97583"> void</span><span style="color:#B392F0"> setName</span><span style="color:#E1E4E8">(String </span><span style="color:#FFAB70">name</span><span style="color:#E1E4E8">) { </span><span style="color:#79B8FF">this</span><span style="color:#E1E4E8">.name </span><span style="color:#F97583">=</span><span style="color:#E1E4E8"> name; }</span></span>
+<span class="line"><span style="color:#E1E4E8">    </span></span>
+<span class="line"><span style="color:#F97583">    public</span><span style="color:#E1E4E8"> String </span><span style="color:#B392F0">getEmail</span><span style="color:#E1E4E8">() { </span><span style="color:#F97583">return</span><span style="color:#E1E4E8"> email; }</span></span>
+<span class="line"><span style="color:#F97583">    public</span><span style="color:#F97583"> void</span><span style="color:#B392F0"> setEmail</span><span style="color:#E1E4E8">(String </span><span style="color:#FFAB70">email</span><span style="color:#E1E4E8">) { </span><span style="color:#79B8FF">this</span><span style="color:#E1E4E8">.email </span><span style="color:#F97583">=</span><span style="color:#E1E4E8"> email; }</span></span>
+<span class="line"><span style="color:#E1E4E8">}</span></span></code></pre>
+<h3 id="step-2-define-the-api-interface">Step 2: Define the API Interface</h3>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8; overflow-x: auto;" tabindex="0" data-language="java"><code><span class="line"><span style="color:#F97583">public</span><span style="color:#F97583"> interface</span><span style="color:#B392F0"> ApiService</span><span style="color:#E1E4E8"> {</span></span>
+<span class="line"><span style="color:#E1E4E8">    @</span><span style="color:#F97583">GET</span><span style="color:#E1E4E8">(</span><span style="color:#9ECBFF">"users"</span><span style="color:#E1E4E8">)</span></span>
+<span class="line"><span style="color:#E1E4E8">    Call&#x3C;List&#x3C;</span><span style="color:#F97583">User</span><span style="color:#E1E4E8">>> </span><span style="color:#B392F0">getUsers</span><span style="color:#E1E4E8">();</span></span>
+<span class="line"><span style="color:#E1E4E8">    </span></span>
+<span class="line"><span style="color:#E1E4E8">    @</span><span style="color:#F97583">GET</span><span style="color:#E1E4E8">(</span><span style="color:#9ECBFF">"users/{userId}"</span><span style="color:#E1E4E8">)</span></span>
+<span class="line"><span style="color:#E1E4E8">    Call&#x3C;</span><span style="color:#F97583">User</span><span style="color:#E1E4E8">> </span><span style="color:#B392F0">getUser</span><span style="color:#E1E4E8">(@</span><span style="color:#F97583">Path</span><span style="color:#E1E4E8">(</span><span style="color:#9ECBFF">"userId"</span><span style="color:#E1E4E8">) </span><span style="color:#F97583">int</span><span style="color:#FFAB70"> userId</span><span style="color:#E1E4E8">);</span></span>
+<span class="line"><span style="color:#E1E4E8">    </span></span>
+<span class="line"><span style="color:#E1E4E8">    @</span><span style="color:#F97583">POST</span><span style="color:#E1E4E8">(</span><span style="color:#9ECBFF">"users"</span><span style="color:#E1E4E8">)</span></span>
+<span class="line"><span style="color:#E1E4E8">    Call&#x3C;</span><span style="color:#F97583">User</span><span style="color:#E1E4E8">> </span><span style="color:#B392F0">createUser</span><span style="color:#E1E4E8">(@</span><span style="color:#F97583">Body</span><span style="color:#E1E4E8"> User </span><span style="color:#FFAB70">user</span><span style="color:#E1E4E8">);</span></span>
+<span class="line"><span style="color:#E1E4E8">}</span></span></code></pre>
+<h3 id="step-3-create-the-retrofit-instance">Step 3: Create the Retrofit Instance</h3>
+<p>Create a singleton class to manage the Retrofit instance:</p>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8; overflow-x: auto;" tabindex="0" data-language="java"><code><span class="line"><span style="color:#F97583">public</span><span style="color:#F97583"> class</span><span style="color:#B392F0"> RetrofitClient</span><span style="color:#E1E4E8"> {</span></span>
+<span class="line"><span style="color:#F97583">    private</span><span style="color:#F97583"> static</span><span style="color:#F97583"> final</span><span style="color:#E1E4E8"> String BASE_URL </span><span style="color:#F97583">=</span><span style="color:#9ECBFF"> "https://api.example.com/"</span><span style="color:#E1E4E8">;</span></span>
+<span class="line"><span style="color:#F97583">    private</span><span style="color:#F97583"> static</span><span style="color:#E1E4E8"> RetrofitClient instance;</span></span>
+<span class="line"><span style="color:#F97583">    private</span><span style="color:#F97583"> final</span><span style="color:#E1E4E8"> Retrofit retrofit;</span></span>
+<span class="line"><span style="color:#E1E4E8">    </span></span>
+<span class="line"><span style="color:#F97583">    private</span><span style="color:#B392F0"> RetrofitClient</span><span style="color:#E1E4E8">() {</span></span>
+<span class="line"><span style="color:#E1E4E8">        OkHttpClient.Builder httpClient </span><span style="color:#F97583">=</span><span style="color:#F97583"> new</span><span style="color:#E1E4E8"> OkHttpClient.</span><span style="color:#B392F0">Builder</span><span style="color:#E1E4E8">();</span></span>
+<span class="line"><span style="color:#E1E4E8">        </span></span>
+<span class="line"><span style="color:#6A737D">        // Add logging interceptor for debugging</span></span>
+<span class="line"><span style="color:#E1E4E8">        HttpLoggingInterceptor loggingInterceptor </span><span style="color:#F97583">=</span><span style="color:#F97583"> new</span><span style="color:#B392F0"> HttpLoggingInterceptor</span><span style="color:#E1E4E8">();</span></span>
+<span class="line"><span style="color:#E1E4E8">        loggingInterceptor.</span><span style="color:#B392F0">setLevel</span><span style="color:#E1E4E8">(HttpLoggingInterceptor.Level.BODY);</span></span>
+<span class="line"><span style="color:#E1E4E8">        httpClient.</span><span style="color:#B392F0">addInterceptor</span><span style="color:#E1E4E8">(loggingInterceptor);</span></span>
+<span class="line"><span style="color:#E1E4E8">        </span></span>
+<span class="line"><span style="color:#E1E4E8">        retrofit </span><span style="color:#F97583">=</span><span style="color:#F97583"> new</span><span style="color:#E1E4E8"> Retrofit.</span><span style="color:#B392F0">Builder</span><span style="color:#E1E4E8">()</span></span>
+<span class="line"><span style="color:#E1E4E8">                .</span><span style="color:#B392F0">baseUrl</span><span style="color:#E1E4E8">(BASE_URL)</span></span>
+<span class="line"><span style="color:#E1E4E8">                .</span><span style="color:#B392F0">addConverterFactory</span><span style="color:#E1E4E8">(GsonConverterFactory.</span><span style="color:#B392F0">create</span><span style="color:#E1E4E8">())</span></span>
+<span class="line"><span style="color:#E1E4E8">                .</span><span style="color:#B392F0">client</span><span style="color:#E1E4E8">(httpClient.</span><span style="color:#B392F0">build</span><span style="color:#E1E4E8">())</span></span>
+<span class="line"><span style="color:#E1E4E8">                .</span><span style="color:#B392F0">build</span><span style="color:#E1E4E8">();</span></span>
+<span class="line"><span style="color:#E1E4E8">    }</span></span>
+<span class="line"><span style="color:#E1E4E8">    </span></span>
+<span class="line"><span style="color:#F97583">    public</span><span style="color:#F97583"> static</span><span style="color:#F97583"> synchronized</span><span style="color:#E1E4E8"> RetrofitClient </span><span style="color:#B392F0">getInstance</span><span style="color:#E1E4E8">() {</span></span>
+<span class="line"><span style="color:#F97583">        if</span><span style="color:#E1E4E8"> (instance </span><span style="color:#F97583">==</span><span style="color:#79B8FF"> null</span><span style="color:#E1E4E8">) {</span></span>
+<span class="line"><span style="color:#E1E4E8">            instance </span><span style="color:#F97583">=</span><span style="color:#F97583"> new</span><span style="color:#B392F0"> RetrofitClient</span><span style="color:#E1E4E8">();</span></span>
+<span class="line"><span style="color:#E1E4E8">        }</span></span>
+<span class="line"><span style="color:#F97583">        return</span><span style="color:#E1E4E8"> instance;</span></span>
+<span class="line"><span style="color:#E1E4E8">    }</span></span>
+<span class="line"><span style="color:#E1E4E8">    </span></span>
+<span class="line"><span style="color:#F97583">    public</span><span style="color:#E1E4E8"> ApiService </span><span style="color:#B392F0">getApiService</span><span style="color:#E1E4E8">() {</span></span>
+<span class="line"><span style="color:#F97583">        return</span><span style="color:#E1E4E8"> retrofit.</span><span style="color:#B392F0">create</span><span style="color:#E1E4E8">(ApiService.class);</span></span>
+<span class="line"><span style="color:#E1E4E8">    }</span></span>
+<span class="line"><span style="color:#E1E4E8">}</span></span></code></pre>
+<h3 id="step-4-make-api-calls-with-progress-indicator">Step 4: Make API Calls with Progress Indicator</h3>
+<p>Now, let’s create an Activity that makes an API call and shows a progress indicator:</p>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8; overflow-x: auto;" tabindex="0" data-language="java"><code><span class="line"><span style="color:#F97583">public</span><span style="color:#F97583"> class</span><span style="color:#B392F0"> MainActivity</span><span style="color:#F97583"> extends</span><span style="color:#B392F0"> AppCompatActivity</span><span style="color:#E1E4E8"> {</span></span>
+<span class="line"><span style="color:#F97583">    private</span><span style="color:#E1E4E8"> ProgressBar progressBar;</span></span>
+<span class="line"><span style="color:#F97583">    private</span><span style="color:#E1E4E8"> RecyclerView recyclerView;</span></span>
+<span class="line"><span style="color:#F97583">    private</span><span style="color:#E1E4E8"> UserAdapter adapter;</span></span>
+<span class="line"><span style="color:#E1E4E8">    </span></span>
+<span class="line"><span style="color:#E1E4E8">    @</span><span style="color:#F97583">Override</span></span>
+<span class="line"><span style="color:#F97583">    protected</span><span style="color:#F97583"> void</span><span style="color:#B392F0"> onCreate</span><span style="color:#E1E4E8">(Bundle </span><span style="color:#FFAB70">savedInstanceState</span><span style="color:#E1E4E8">) {</span></span>
+<span class="line"><span style="color:#79B8FF">        super</span><span style="color:#E1E4E8">.</span><span style="color:#B392F0">onCreate</span><span style="color:#E1E4E8">(savedInstanceState);</span></span>
+<span class="line"><span style="color:#B392F0">        setContentView</span><span style="color:#E1E4E8">(R.layout.activity_main);</span></span>
+<span class="line"><span style="color:#E1E4E8">        </span></span>
+<span class="line"><span style="color:#E1E4E8">        progressBar </span><span style="color:#F97583">=</span><span style="color:#B392F0"> findViewById</span><span style="color:#E1E4E8">(R.id.progressBar);</span></span>
+<span class="line"><span style="color:#E1E4E8">        recyclerView </span><span style="color:#F97583">=</span><span style="color:#B392F0"> findViewById</span><span style="color:#E1E4E8">(R.id.recyclerView);</span></span>
+<span class="line"><span style="color:#E1E4E8">        </span></span>
+<span class="line"><span style="color:#E1E4E8">        recyclerView.</span><span style="color:#B392F0">setLayoutManager</span><span style="color:#E1E4E8">(</span><span style="color:#F97583">new</span><span style="color:#B392F0"> LinearLayoutManager</span><span style="color:#E1E4E8">(</span><span style="color:#79B8FF">this</span><span style="color:#E1E4E8">));</span></span>
+<span class="line"><span style="color:#E1E4E8">        adapter </span><span style="color:#F97583">=</span><span style="color:#F97583"> new</span><span style="color:#B392F0"> UserAdapter</span><span style="color:#E1E4E8">();</span></span>
+<span class="line"><span style="color:#E1E4E8">        recyclerView.</span><span style="color:#B392F0">setAdapter</span><span style="color:#E1E4E8">(adapter);</span></span>
+<span class="line"><span style="color:#E1E4E8">        </span></span>
+<span class="line"><span style="color:#B392F0">        fetchUsers</span><span style="color:#E1E4E8">();</span></span>
+<span class="line"><span style="color:#E1E4E8">    }</span></span>
+<span class="line"><span style="color:#E1E4E8">    </span></span>
+<span class="line"><span style="color:#F97583">    private</span><span style="color:#F97583"> void</span><span style="color:#B392F0"> fetchUsers</span><span style="color:#E1E4E8">() {</span></span>
+<span class="line"><span style="color:#6A737D">        // Show progress bar</span></span>
+<span class="line"><span style="color:#E1E4E8">        progressBar.</span><span style="color:#B392F0">setVisibility</span><span style="color:#E1E4E8">(View.VISIBLE);</span></span>
+<span class="line"><span style="color:#E1E4E8">        </span></span>
+<span class="line"><span style="color:#E1E4E8">        ApiService apiService </span><span style="color:#F97583">=</span><span style="color:#E1E4E8"> RetrofitClient.</span><span style="color:#B392F0">getInstance</span><span style="color:#E1E4E8">().</span><span style="color:#B392F0">getApiService</span><span style="color:#E1E4E8">();</span></span>
+<span class="line"><span style="color:#E1E4E8">        Call&#x3C;List&#x3C;</span><span style="color:#F97583">User</span><span style="color:#E1E4E8">>> call </span><span style="color:#F97583">=</span><span style="color:#E1E4E8"> apiService.</span><span style="color:#B392F0">getUsers</span><span style="color:#E1E4E8">();</span></span>
+<span class="line"><span style="color:#E1E4E8">        </span></span>
+<span class="line"><span style="color:#E1E4E8">        call.</span><span style="color:#B392F0">enqueue</span><span style="color:#E1E4E8">(</span><span style="color:#F97583">new</span><span style="color:#E1E4E8"> Callback&#x3C;List&#x3C;</span><span style="color:#F97583">User</span><span style="color:#E1E4E8">>>() {</span></span>
+<span class="line"><span style="color:#E1E4E8">            @</span><span style="color:#F97583">Override</span></span>
+<span class="line"><span style="color:#F97583">            public</span><span style="color:#F97583"> void</span><span style="color:#B392F0"> onResponse</span><span style="color:#E1E4E8">(Call&#x3C;List&#x3C;</span><span style="color:#F97583">User</span><span style="color:#E1E4E8">>> </span><span style="color:#FFAB70">call</span><span style="color:#E1E4E8">, Response&#x3C;List&#x3C;</span><span style="color:#F97583">User</span><span style="color:#E1E4E8">>> </span><span style="color:#FFAB70">response</span><span style="color:#E1E4E8">) {</span></span>
+<span class="line"><span style="color:#6A737D">                // Hide progress bar</span></span>
+<span class="line"><span style="color:#E1E4E8">                progressBar.</span><span style="color:#B392F0">setVisibility</span><span style="color:#E1E4E8">(View.GONE);</span></span>
+<span class="line"><span style="color:#E1E4E8">                </span></span>
+<span class="line"><span style="color:#F97583">                if</span><span style="color:#E1E4E8"> (response.</span><span style="color:#B392F0">isSuccessful</span><span style="color:#E1E4E8">() </span><span style="color:#F97583">&#x26;&#x26;</span><span style="color:#E1E4E8"> response.</span><span style="color:#B392F0">body</span><span style="color:#E1E4E8">() </span><span style="color:#F97583">!=</span><span style="color:#79B8FF"> null</span><span style="color:#E1E4E8">) {</span></span>
+<span class="line"><span style="color:#E1E4E8">                    List&#x3C;</span><span style="color:#F97583">User</span><span style="color:#E1E4E8">> users </span><span style="color:#F97583">=</span><span style="color:#E1E4E8"> response.</span><span style="color:#B392F0">body</span><span style="color:#E1E4E8">();</span></span>
+<span class="line"><span style="color:#E1E4E8">                    adapter.</span><span style="color:#B392F0">setUsers</span><span style="color:#E1E4E8">(users);</span></span>
+<span class="line"><span style="color:#E1E4E8">                } </span><span style="color:#F97583">else</span><span style="color:#E1E4E8"> {</span></span>
+<span class="line"><span style="color:#B392F0">                    handleErrorResponse</span><span style="color:#E1E4E8">(response);</span></span>
+<span class="line"><span style="color:#E1E4E8">                }</span></span>
+<span class="line"><span style="color:#E1E4E8">            }</span></span>
+<span class="line"><span style="color:#E1E4E8">            </span></span>
+<span class="line"><span style="color:#E1E4E8">            @</span><span style="color:#F97583">Override</span></span>
+<span class="line"><span style="color:#F97583">            public</span><span style="color:#F97583"> void</span><span style="color:#B392F0"> onFailure</span><span style="color:#E1E4E8">(Call&#x3C;List&#x3C;</span><span style="color:#F97583">User</span><span style="color:#E1E4E8">>> </span><span style="color:#FFAB70">call</span><span style="color:#E1E4E8">, Throwable </span><span style="color:#FFAB70">t</span><span style="color:#E1E4E8">) {</span></span>
+<span class="line"><span style="color:#6A737D">                // Hide progress bar</span></span>
+<span class="line"><span style="color:#E1E4E8">                progressBar.</span><span style="color:#B392F0">setVisibility</span><span style="color:#E1E4E8">(View.GONE);</span></span>
+<span class="line"><span style="color:#E1E4E8">                </span></span>
+<span class="line"><span style="color:#6A737D">                // Handle network error</span></span>
+<span class="line"><span style="color:#E1E4E8">                Toast.</span><span style="color:#B392F0">makeText</span><span style="color:#E1E4E8">(MainActivity.this, </span></span>
+<span class="line"><span style="color:#9ECBFF">                        "Network error: "</span><span style="color:#F97583"> +</span><span style="color:#E1E4E8"> t.</span><span style="color:#B392F0">getMessage</span><span style="color:#E1E4E8">(), </span></span>
+<span class="line"><span style="color:#E1E4E8">                        Toast.LENGTH_LONG).</span><span style="color:#B392F0">show</span><span style="color:#E1E4E8">();</span></span>
+<span class="line"><span style="color:#E1E4E8">            }</span></span>
+<span class="line"><span style="color:#E1E4E8">        });</span></span>
+<span class="line"><span style="color:#E1E4E8">    }</span></span>
+<span class="line"><span style="color:#E1E4E8">    </span></span>
+<span class="line"><span style="color:#F97583">    private</span><span style="color:#F97583"> void</span><span style="color:#B392F0"> handleErrorResponse</span><span style="color:#E1E4E8">(Response&#x3C;List&#x3C;</span><span style="color:#F97583">User</span><span style="color:#E1E4E8">>> </span><span style="color:#FFAB70">response</span><span style="color:#E1E4E8">) {</span></span>
+<span class="line"><span style="color:#E1E4E8">        String errorMessage;</span></span>
+<span class="line"><span style="color:#F97583">        try</span><span style="color:#E1E4E8"> {</span></span>
+<span class="line"><span style="color:#E1E4E8">            errorMessage </span><span style="color:#F97583">=</span><span style="color:#E1E4E8"> response.</span><span style="color:#B392F0">errorBody</span><span style="color:#E1E4E8">() </span><span style="color:#F97583">!=</span><span style="color:#79B8FF"> null</span><span style="color:#F97583"> ?</span><span style="color:#E1E4E8"> </span></span>
+<span class="line"><span style="color:#E1E4E8">                    response.</span><span style="color:#B392F0">errorBody</span><span style="color:#E1E4E8">().</span><span style="color:#B392F0">string</span><span style="color:#E1E4E8">() </span><span style="color:#F97583">:</span><span style="color:#9ECBFF"> "Unknown error"</span><span style="color:#E1E4E8">;</span></span>
+<span class="line"><span style="color:#E1E4E8">        } </span><span style="color:#F97583">catch</span><span style="color:#E1E4E8"> (IOException </span><span style="color:#FFAB70">e</span><span style="color:#E1E4E8">) {</span></span>
+<span class="line"><span style="color:#E1E4E8">            errorMessage </span><span style="color:#F97583">=</span><span style="color:#9ECBFF"> "Error parsing error message"</span><span style="color:#E1E4E8">;</span></span>
+<span class="line"><span style="color:#E1E4E8">        }</span></span>
+<span class="line"><span style="color:#E1E4E8">        </span></span>
+<span class="line"><span style="color:#E1E4E8">        Toast.</span><span style="color:#B392F0">makeText</span><span style="color:#E1E4E8">(</span><span style="color:#79B8FF">this</span><span style="color:#E1E4E8">, </span></span>
+<span class="line"><span style="color:#9ECBFF">                "Error: "</span><span style="color:#F97583"> +</span><span style="color:#E1E4E8"> response.</span><span style="color:#B392F0">code</span><span style="color:#E1E4E8">() </span><span style="color:#F97583">+</span><span style="color:#9ECBFF"> " "</span><span style="color:#F97583"> +</span><span style="color:#E1E4E8"> errorMessage, </span></span>
+<span class="line"><span style="color:#E1E4E8">                Toast.LENGTH_LONG).</span><span style="color:#B392F0">show</span><span style="color:#E1E4E8">();</span></span>
+<span class="line"><span style="color:#E1E4E8">    }</span></span>
+<span class="line"><span style="color:#E1E4E8">}</span></span></code></pre>
+<h3 id="step-5-create-a-simple-adapter">Step 5: Create a Simple Adapter</h3>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8; overflow-x: auto;" tabindex="0" data-language="java"><code><span class="line"><span style="color:#F97583">public</span><span style="color:#F97583"> class</span><span style="color:#B392F0"> UserAdapter</span><span style="color:#F97583"> extends</span><span style="color:#B392F0"> RecyclerView.Adapter</span><span style="color:#E1E4E8">&#x3C;</span><span style="color:#F97583">UserAdapter</span><span style="color:#E1E4E8">.</span><span style="color:#F97583">UserViewHolder</span><span style="color:#E1E4E8">> {</span></span>
+<span class="line"><span style="color:#F97583">    private</span><span style="color:#E1E4E8"> List&#x3C;</span><span style="color:#F97583">User</span><span style="color:#E1E4E8">> users </span><span style="color:#F97583">=</span><span style="color:#F97583"> new</span><span style="color:#E1E4E8"> ArrayList&#x3C;>();</span></span>
+<span class="line"><span style="color:#E1E4E8">    </span></span>
+<span class="line"><span style="color:#F97583">    public</span><span style="color:#F97583"> void</span><span style="color:#B392F0"> setUsers</span><span style="color:#E1E4E8">(List&#x3C;</span><span style="color:#F97583">User</span><span style="color:#E1E4E8">> </span><span style="color:#FFAB70">users</span><span style="color:#E1E4E8">) {</span></span>
+<span class="line"><span style="color:#79B8FF">        this</span><span style="color:#E1E4E8">.users </span><span style="color:#F97583">=</span><span style="color:#E1E4E8"> users;</span></span>
+<span class="line"><span style="color:#B392F0">        notifyDataSetChanged</span><span style="color:#E1E4E8">();</span></span>
+<span class="line"><span style="color:#E1E4E8">    }</span></span>
+<span class="line"><span style="color:#E1E4E8">    </span></span>
+<span class="line"><span style="color:#E1E4E8">    @</span><span style="color:#F97583">NonNull</span></span>
+<span class="line"><span style="color:#E1E4E8">    @</span><span style="color:#F97583">Override</span></span>
+<span class="line"><span style="color:#F97583">    public</span><span style="color:#E1E4E8"> UserViewHolder </span><span style="color:#B392F0">onCreateViewHolder</span><span style="color:#E1E4E8">(@</span><span style="color:#F97583">NonNull</span><span style="color:#E1E4E8"> ViewGroup </span><span style="color:#FFAB70">parent</span><span style="color:#E1E4E8">, </span><span style="color:#F97583">int</span><span style="color:#FFAB70"> viewType</span><span style="color:#E1E4E8">) {</span></span>
+<span class="line"><span style="color:#E1E4E8">        View view </span><span style="color:#F97583">=</span><span style="color:#E1E4E8"> LayoutInflater.</span><span style="color:#B392F0">from</span><span style="color:#E1E4E8">(parent.</span><span style="color:#B392F0">getContext</span><span style="color:#E1E4E8">())</span></span>
+<span class="line"><span style="color:#E1E4E8">                .</span><span style="color:#B392F0">inflate</span><span style="color:#E1E4E8">(R.layout.item_user, parent, </span><span style="color:#79B8FF">false</span><span style="color:#E1E4E8">);</span></span>
+<span class="line"><span style="color:#F97583">        return</span><span style="color:#F97583"> new</span><span style="color:#B392F0"> UserViewHolder</span><span style="color:#E1E4E8">(view);</span></span>
+<span class="line"><span style="color:#E1E4E8">    }</span></span>
+<span class="line"><span style="color:#E1E4E8">    </span></span>
+<span class="line"><span style="color:#E1E4E8">    @</span><span style="color:#F97583">Override</span></span>
+<span class="line"><span style="color:#F97583">    public</span><span style="color:#F97583"> void</span><span style="color:#B392F0"> onBindViewHolder</span><span style="color:#E1E4E8">(@</span><span style="color:#F97583">NonNull</span><span style="color:#E1E4E8"> UserViewHolder </span><span style="color:#FFAB70">holder</span><span style="color:#E1E4E8">, </span><span style="color:#F97583">int</span><span style="color:#FFAB70"> position</span><span style="color:#E1E4E8">) {</span></span>
+<span class="line"><span style="color:#E1E4E8">        User user </span><span style="color:#F97583">=</span><span style="color:#E1E4E8"> users.</span><span style="color:#B392F0">get</span><span style="color:#E1E4E8">(position);</span></span>
+<span class="line"><span style="color:#E1E4E8">        holder.</span><span style="color:#B392F0">bind</span><span style="color:#E1E4E8">(user);</span></span>
+<span class="line"><span style="color:#E1E4E8">    }</span></span>
+<span class="line"><span style="color:#E1E4E8">    </span></span>
+<span class="line"><span style="color:#E1E4E8">    @</span><span style="color:#F97583">Override</span></span>
+<span class="line"><span style="color:#F97583">    public</span><span style="color:#F97583"> int</span><span style="color:#B392F0"> getItemCount</span><span style="color:#E1E4E8">() {</span></span>
+<span class="line"><span style="color:#F97583">        return</span><span style="color:#E1E4E8"> users.</span><span style="color:#B392F0">size</span><span style="color:#E1E4E8">();</span></span>
+<span class="line"><span style="color:#E1E4E8">    }</span></span>
+<span class="line"><span style="color:#E1E4E8">    </span></span>
+<span class="line"><span style="color:#F97583">    static</span><span style="color:#F97583"> class</span><span style="color:#B392F0"> UserViewHolder</span><span style="color:#F97583"> extends</span><span style="color:#B392F0"> RecyclerView.ViewHolder</span><span style="color:#E1E4E8"> {</span></span>
+<span class="line"><span style="color:#F97583">        private</span><span style="color:#E1E4E8"> TextView nameTextView;</span></span>
+<span class="line"><span style="color:#F97583">        private</span><span style="color:#E1E4E8"> TextView emailTextView;</span></span>
+<span class="line"><span style="color:#E1E4E8">        </span></span>
+<span class="line"><span style="color:#F97583">        public</span><span style="color:#B392F0"> UserViewHolder</span><span style="color:#E1E4E8">(@</span><span style="color:#F97583">NonNull</span><span style="color:#E1E4E8"> View </span><span style="color:#FFAB70">itemView</span><span style="color:#E1E4E8">) {</span></span>
+<span class="line"><span style="color:#79B8FF">            super</span><span style="color:#E1E4E8">(itemView);</span></span>
+<span class="line"><span style="color:#E1E4E8">            nameTextView </span><span style="color:#F97583">=</span><span style="color:#E1E4E8"> itemView.</span><span style="color:#B392F0">findViewById</span><span style="color:#E1E4E8">(R.id.nameTextView);</span></span>
+<span class="line"><span style="color:#E1E4E8">            emailTextView </span><span style="color:#F97583">=</span><span style="color:#E1E4E8"> itemView.</span><span style="color:#B392F0">findViewById</span><span style="color:#E1E4E8">(R.id.emailTextView);</span></span>
+<span class="line"><span style="color:#E1E4E8">        }</span></span>
+<span class="line"><span style="color:#E1E4E8">        </span></span>
+<span class="line"><span style="color:#F97583">        public</span><span style="color:#F97583"> void</span><span style="color:#B392F0"> bind</span><span style="color:#E1E4E8">(User </span><span style="color:#FFAB70">user</span><span style="color:#E1E4E8">) {</span></span>
+<span class="line"><span style="color:#E1E4E8">            nameTextView.</span><span style="color:#B392F0">setText</span><span style="color:#E1E4E8">(user.</span><span style="color:#B392F0">getName</span><span style="color:#E1E4E8">());</span></span>
+<span class="line"><span style="color:#E1E4E8">            emailTextView.</span><span style="color:#B392F0">setText</span><span style="color:#E1E4E8">(user.</span><span style="color:#B392F0">getEmail</span><span style="color:#E1E4E8">());</span></span>
+<span class="line"><span style="color:#E1E4E8">        }</span></span>
+<span class="line"><span style="color:#E1E4E8">    }</span></span>
+<span class="line"><span style="color:#E1E4E8">}</span></span></code></pre>
+<h3 id="step-6-create-layouts">Step 6: Create Layouts</h3>
+<p>Create <code>activity_main.xml</code>:</p>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8; overflow-x: auto;" tabindex="0" data-language="xml"><code><span class="line"><span style="color:#E1E4E8">&#x3C;?</span><span style="color:#85E89D">xml</span><span style="color:#B392F0"> version</span><span style="color:#E1E4E8">=</span><span style="color:#9ECBFF">"1.0"</span><span style="color:#B392F0"> encoding</span><span style="color:#E1E4E8">=</span><span style="color:#9ECBFF">"utf-8"</span><span style="color:#E1E4E8">?></span></span>
+<span class="line"><span style="color:#E1E4E8">&#x3C;</span><span style="color:#85E89D">RelativeLayout</span><span style="color:#B392F0"> xmlns:android</span><span style="color:#E1E4E8">=</span><span style="color:#9ECBFF">"http://schemas.android.com/apk/res/android"</span></span>
+<span class="line"><span style="color:#B392F0">    xmlns:tools</span><span style="color:#E1E4E8">=</span><span style="color:#9ECBFF">"http://schemas.android.com/tools"</span></span>
+<span class="line"><span style="color:#B392F0">    android:layout_width</span><span style="color:#E1E4E8">=</span><span style="color:#9ECBFF">"match_parent"</span></span>
+<span class="line"><span style="color:#B392F0">    android:layout_height</span><span style="color:#E1E4E8">=</span><span style="color:#9ECBFF">"match_parent"</span></span>
+<span class="line"><span style="color:#B392F0">    tools:context</span><span style="color:#E1E4E8">=</span><span style="color:#9ECBFF">".MainActivity"</span><span style="color:#E1E4E8">></span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#E1E4E8">    &#x3C;</span><span style="color:#85E89D">androidx.recyclerview.widget.RecyclerView</span></span>
+<span class="line"><span style="color:#B392F0">        android:id</span><span style="color:#E1E4E8">=</span><span style="color:#9ECBFF">"@+id/recyclerView"</span></span>
+<span class="line"><span style="color:#B392F0">        android:layout_width</span><span style="color:#E1E4E8">=</span><span style="color:#9ECBFF">"match_parent"</span></span>
+<span class="line"><span style="color:#B392F0">        android:layout_height</span><span style="color:#E1E4E8">=</span><span style="color:#9ECBFF">"match_parent"</span><span style="color:#E1E4E8"> /></span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#E1E4E8">    &#x3C;</span><span style="color:#85E89D">ProgressBar</span></span>
+<span class="line"><span style="color:#B392F0">        android:id</span><span style="color:#E1E4E8">=</span><span style="color:#9ECBFF">"@+id/progressBar"</span></span>
+<span class="line"><span style="color:#B392F0">        android:layout_width</span><span style="color:#E1E4E8">=</span><span style="color:#9ECBFF">"wrap_content"</span></span>
+<span class="line"><span style="color:#B392F0">        android:layout_height</span><span style="color:#E1E4E8">=</span><span style="color:#9ECBFF">"wrap_content"</span></span>
+<span class="line"><span style="color:#B392F0">        android:layout_centerInParent</span><span style="color:#E1E4E8">=</span><span style="color:#9ECBFF">"true"</span></span>
+<span class="line"><span style="color:#B392F0">        android:visibility</span><span style="color:#E1E4E8">=</span><span style="color:#9ECBFF">"gone"</span><span style="color:#E1E4E8"> /></span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#E1E4E8">&#x3C;/</span><span style="color:#85E89D">RelativeLayout</span><span style="color:#E1E4E8">></span></span></code></pre>
+<p>Create <code>item_user.xml</code>:</p>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8; overflow-x: auto;" tabindex="0" data-language="xml"><code><span class="line"><span style="color:#E1E4E8">&#x3C;?</span><span style="color:#85E89D">xml</span><span style="color:#B392F0"> version</span><span style="color:#E1E4E8">=</span><span style="color:#9ECBFF">"1.0"</span><span style="color:#B392F0"> encoding</span><span style="color:#E1E4E8">=</span><span style="color:#9ECBFF">"utf-8"</span><span style="color:#E1E4E8">?></span></span>
+<span class="line"><span style="color:#E1E4E8">&#x3C;</span><span style="color:#85E89D">androidx.cardview.widget.CardView</span><span style="color:#B392F0"> xmlns:android</span><span style="color:#E1E4E8">=</span><span style="color:#9ECBFF">"http://schemas.android.com/apk/res/android"</span></span>
+<span class="line"><span style="color:#B392F0">    xmlns:app</span><span style="color:#E1E4E8">=</span><span style="color:#9ECBFF">"http://schemas.android.com/apk/res-auto"</span></span>
+<span class="line"><span style="color:#B392F0">    android:layout_width</span><span style="color:#E1E4E8">=</span><span style="color:#9ECBFF">"match_parent"</span></span>
+<span class="line"><span style="color:#B392F0">    android:layout_height</span><span style="color:#E1E4E8">=</span><span style="color:#9ECBFF">"wrap_content"</span></span>
+<span class="line"><span style="color:#B392F0">    android:layout_margin</span><span style="color:#E1E4E8">=</span><span style="color:#9ECBFF">"8dp"</span></span>
+<span class="line"><span style="color:#B392F0">    app:cardCornerRadius</span><span style="color:#E1E4E8">=</span><span style="color:#9ECBFF">"4dp"</span></span>
+<span class="line"><span style="color:#B392F0">    app:cardElevation</span><span style="color:#E1E4E8">=</span><span style="color:#9ECBFF">"4dp"</span><span style="color:#E1E4E8">></span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#E1E4E8">    &#x3C;</span><span style="color:#85E89D">LinearLayout</span></span>
+<span class="line"><span style="color:#B392F0">        android:layout_width</span><span style="color:#E1E4E8">=</span><span style="color:#9ECBFF">"match_parent"</span></span>
+<span class="line"><span style="color:#B392F0">        android:layout_height</span><span style="color:#E1E4E8">=</span><span style="color:#9ECBFF">"wrap_content"</span></span>
+<span class="line"><span style="color:#B392F0">        android:orientation</span><span style="color:#E1E4E8">=</span><span style="color:#9ECBFF">"vertical"</span></span>
+<span class="line"><span style="color:#B392F0">        android:padding</span><span style="color:#E1E4E8">=</span><span style="color:#9ECBFF">"16dp"</span><span style="color:#E1E4E8">></span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#E1E4E8">        &#x3C;</span><span style="color:#85E89D">TextView</span></span>
+<span class="line"><span style="color:#B392F0">            android:id</span><span style="color:#E1E4E8">=</span><span style="color:#9ECBFF">"@+id/nameTextView"</span></span>
+<span class="line"><span style="color:#B392F0">            android:layout_width</span><span style="color:#E1E4E8">=</span><span style="color:#9ECBFF">"match_parent"</span></span>
+<span class="line"><span style="color:#B392F0">            android:layout_height</span><span style="color:#E1E4E8">=</span><span style="color:#9ECBFF">"wrap_content"</span></span>
+<span class="line"><span style="color:#B392F0">            android:textSize</span><span style="color:#E1E4E8">=</span><span style="color:#9ECBFF">"18sp"</span></span>
+<span class="line"><span style="color:#B392F0">            android:textStyle</span><span style="color:#E1E4E8">=</span><span style="color:#9ECBFF">"bold"</span><span style="color:#E1E4E8"> /></span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#E1E4E8">        &#x3C;</span><span style="color:#85E89D">TextView</span></span>
+<span class="line"><span style="color:#B392F0">            android:id</span><span style="color:#E1E4E8">=</span><span style="color:#9ECBFF">"@+id/emailTextView"</span></span>
+<span class="line"><span style="color:#B392F0">            android:layout_width</span><span style="color:#E1E4E8">=</span><span style="color:#9ECBFF">"match_parent"</span></span>
+<span class="line"><span style="color:#B392F0">            android:layout_height</span><span style="color:#E1E4E8">=</span><span style="color:#9ECBFF">"wrap_content"</span></span>
+<span class="line"><span style="color:#B392F0">            android:layout_marginTop</span><span style="color:#E1E4E8">=</span><span style="color:#9ECBFF">"4dp"</span></span>
+<span class="line"><span style="color:#B392F0">            android:textSize</span><span style="color:#E1E4E8">=</span><span style="color:#9ECBFF">"16sp"</span><span style="color:#E1E4E8"> /></span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#E1E4E8">    &#x3C;/</span><span style="color:#85E89D">LinearLayout</span><span style="color:#E1E4E8">></span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#E1E4E8">&#x3C;/</span><span style="color:#85E89D">androidx.cardview.widget.CardView</span><span style="color:#E1E4E8">></span></span></code></pre>
+<h2 id="approach-2-using-retrofit-with-rxjava">Approach 2: Using Retrofit with RxJava</h2>
+<p>RxJava provides better composability, thread management, and error handling for network operations.</p>
+<h3 id="step-1-update-the-api-interface-for-rxjava">Step 1: Update the API Interface for RxJava</h3>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8; overflow-x: auto;" tabindex="0" data-language="java"><code><span class="line"><span style="color:#F97583">public</span><span style="color:#F97583"> interface</span><span style="color:#B392F0"> ApiService</span><span style="color:#E1E4E8"> {</span></span>
+<span class="line"><span style="color:#E1E4E8">    @</span><span style="color:#F97583">GET</span><span style="color:#E1E4E8">(</span><span style="color:#9ECBFF">"users"</span><span style="color:#E1E4E8">)</span></span>
+<span class="line"><span style="color:#E1E4E8">    Observable&#x3C;List&#x3C;</span><span style="color:#F97583">User</span><span style="color:#E1E4E8">>> </span><span style="color:#B392F0">getUsersRx</span><span style="color:#E1E4E8">();</span></span>
+<span class="line"><span style="color:#E1E4E8">    </span></span>
+<span class="line"><span style="color:#E1E4E8">    @</span><span style="color:#F97583">GET</span><span style="color:#E1E4E8">(</span><span style="color:#9ECBFF">"users/{userId}"</span><span style="color:#E1E4E8">)</span></span>
+<span class="line"><span style="color:#E1E4E8">    Observable&#x3C;</span><span style="color:#F97583">User</span><span style="color:#E1E4E8">> </span><span style="color:#B392F0">getUserRx</span><span style="color:#E1E4E8">(@</span><span style="color:#F97583">Path</span><span style="color:#E1E4E8">(</span><span style="color:#9ECBFF">"userId"</span><span style="color:#E1E4E8">) </span><span style="color:#F97583">int</span><span style="color:#FFAB70"> userId</span><span style="color:#E1E4E8">);</span></span>
+<span class="line"><span style="color:#E1E4E8">    </span></span>
+<span class="line"><span style="color:#E1E4E8">    @</span><span style="color:#F97583">POST</span><span style="color:#E1E4E8">(</span><span style="color:#9ECBFF">"users"</span><span style="color:#E1E4E8">)</span></span>
+<span class="line"><span style="color:#E1E4E8">    Observable&#x3C;</span><span style="color:#F97583">User</span><span style="color:#E1E4E8">> </span><span style="color:#B392F0">createUserRx</span><span style="color:#E1E4E8">(@</span><span style="color:#F97583">Body</span><span style="color:#E1E4E8"> User </span><span style="color:#FFAB70">user</span><span style="color:#E1E4E8">);</span></span>
+<span class="line"><span style="color:#E1E4E8">}</span></span></code></pre>
+<h3 id="step-2-update-the-retrofit-client">Step 2: Update the Retrofit Client</h3>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8; overflow-x: auto;" tabindex="0" data-language="java"><code><span class="line"><span style="color:#F97583">public</span><span style="color:#F97583"> class</span><span style="color:#B392F0"> RetrofitClient</span><span style="color:#E1E4E8"> {</span></span>
+<span class="line"><span style="color:#F97583">    private</span><span style="color:#F97583"> static</span><span style="color:#F97583"> final</span><span style="color:#E1E4E8"> String BASE_URL </span><span style="color:#F97583">=</span><span style="color:#9ECBFF"> "https://api.example.com/"</span><span style="color:#E1E4E8">;</span></span>
+<span class="line"><span style="color:#F97583">    private</span><span style="color:#F97583"> static</span><span style="color:#E1E4E8"> RetrofitClient instance;</span></span>
+<span class="line"><span style="color:#F97583">    private</span><span style="color:#F97583"> final</span><span style="color:#E1E4E8"> Retrofit retrofit;</span></span>
+<span class="line"><span style="color:#E1E4E8">    </span></span>
+<span class="line"><span style="color:#F97583">    private</span><span style="color:#B392F0"> RetrofitClient</span><span style="color:#E1E4E8">() {</span></span>
+<span class="line"><span style="color:#E1E4E8">        OkHttpClient.Builder httpClient </span><span style="color:#F97583">=</span><span style="color:#F97583"> new</span><span style="color:#E1E4E8"> OkHttpClient.</span><span style="color:#B392F0">Builder</span><span style="color:#E1E4E8">();</span></span>
+<span class="line"><span style="color:#E1E4E8">        </span></span>
+<span class="line"><span style="color:#6A737D">        // Add logging interceptor for debugging</span></span>
+<span class="line"><span style="color:#E1E4E8">        HttpLoggingInterceptor loggingInterceptor </span><span style="color:#F97583">=</span><span style="color:#F97583"> new</span><span style="color:#B392F0"> HttpLoggingInterceptor</span><span style="color:#E1E4E8">();</span></span>
+<span class="line"><span style="color:#E1E4E8">        loggingInterceptor.</span><span style="color:#B392F0">setLevel</span><span style="color:#E1E4E8">(HttpLoggingInterceptor.Level.BODY);</span></span>
+<span class="line"><span style="color:#E1E4E8">        httpClient.</span><span style="color:#B392F0">addInterceptor</span><span style="color:#E1E4E8">(loggingInterceptor);</span></span>
+<span class="line"><span style="color:#E1E4E8">        </span></span>
+<span class="line"><span style="color:#E1E4E8">        retrofit </span><span style="color:#F97583">=</span><span style="color:#F97583"> new</span><span style="color:#E1E4E8"> Retrofit.</span><span style="color:#B392F0">Builder</span><span style="color:#E1E4E8">()</span></span>
+<span class="line"><span style="color:#E1E4E8">                .</span><span style="color:#B392F0">baseUrl</span><span style="color:#E1E4E8">(BASE_URL)</span></span>
+<span class="line"><span style="color:#E1E4E8">                .</span><span style="color:#B392F0">addConverterFactory</span><span style="color:#E1E4E8">(GsonConverterFactory.</span><span style="color:#B392F0">create</span><span style="color:#E1E4E8">())</span></span>
+<span class="line"><span style="color:#E1E4E8">                .</span><span style="color:#B392F0">addCallAdapterFactory</span><span style="color:#E1E4E8">(RxJava3CallAdapterFactory.</span><span style="color:#B392F0">create</span><span style="color:#E1E4E8">()) </span><span style="color:#6A737D">// Add RxJava adapter</span></span>
+<span class="line"><span style="color:#E1E4E8">                .</span><span style="color:#B392F0">client</span><span style="color:#E1E4E8">(httpClient.</span><span style="color:#B392F0">build</span><span style="color:#E1E4E8">())</span></span>
+<span class="line"><span style="color:#E1E4E8">                .</span><span style="color:#B392F0">build</span><span style="color:#E1E4E8">();</span></span>
+<span class="line"><span style="color:#E1E4E8">    }</span></span>
+<span class="line"><span style="color:#E1E4E8">    </span></span>
+<span class="line"><span style="color:#F97583">    public</span><span style="color:#F97583"> static</span><span style="color:#F97583"> synchronized</span><span style="color:#E1E4E8"> RetrofitClient </span><span style="color:#B392F0">getInstance</span><span style="color:#E1E4E8">() {</span></span>
+<span class="line"><span style="color:#F97583">        if</span><span style="color:#E1E4E8"> (instance </span><span style="color:#F97583">==</span><span style="color:#79B8FF"> null</span><span style="color:#E1E4E8">) {</span></span>
+<span class="line"><span style="color:#E1E4E8">            instance </span><span style="color:#F97583">=</span><span style="color:#F97583"> new</span><span style="color:#B392F0"> RetrofitClient</span><span style="color:#E1E4E8">();</span></span>
+<span class="line"><span style="color:#E1E4E8">        }</span></span>
+<span class="line"><span style="color:#F97583">        return</span><span style="color:#E1E4E8"> instance;</span></span>
+<span class="line"><span style="color:#E1E4E8">    }</span></span>
+<span class="line"><span style="color:#E1E4E8">    </span></span>
+<span class="line"><span style="color:#F97583">    public</span><span style="color:#E1E4E8"> ApiService </span><span style="color:#B392F0">getApiService</span><span style="color:#E1E4E8">() {</span></span>
+<span class="line"><span style="color:#F97583">        return</span><span style="color:#E1E4E8"> retrofit.</span><span style="color:#B392F0">create</span><span style="color:#E1E4E8">(ApiService.class);</span></span>
+<span class="line"><span style="color:#E1E4E8">    }</span></span>
+<span class="line"><span style="color:#E1E4E8">}</span></span></code></pre>
+<h3 id="step-3-make-api-calls-with-rxjava-and-progress-indicator">Step 3: Make API Calls with RxJava and Progress Indicator</h3>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8; overflow-x: auto;" tabindex="0" data-language="java"><code><span class="line"><span style="color:#F97583">public</span><span style="color:#F97583"> class</span><span style="color:#B392F0"> RxJavaActivity</span><span style="color:#F97583"> extends</span><span style="color:#B392F0"> AppCompatActivity</span><span style="color:#E1E4E8"> {</span></span>
+<span class="line"><span style="color:#F97583">    private</span><span style="color:#E1E4E8"> ProgressBar progressBar;</span></span>
+<span class="line"><span style="color:#F97583">    private</span><span style="color:#E1E4E8"> RecyclerView recyclerView;</span></span>
+<span class="line"><span style="color:#F97583">    private</span><span style="color:#E1E4E8"> UserAdapter adapter;</span></span>
+<span class="line"><span style="color:#F97583">    private</span><span style="color:#E1E4E8"> CompositeDisposable disposables </span><span style="color:#F97583">=</span><span style="color:#F97583"> new</span><span style="color:#B392F0"> CompositeDisposable</span><span style="color:#E1E4E8">();</span></span>
+<span class="line"><span style="color:#E1E4E8">    </span></span>
+<span class="line"><span style="color:#E1E4E8">    @</span><span style="color:#F97583">Override</span></span>
+<span class="line"><span style="color:#F97583">    protected</span><span style="color:#F97583"> void</span><span style="color:#B392F0"> onCreate</span><span style="color:#E1E4E8">(Bundle </span><span style="color:#FFAB70">savedInstanceState</span><span style="color:#E1E4E8">) {</span></span>
+<span class="line"><span style="color:#79B8FF">        super</span><span style="color:#E1E4E8">.</span><span style="color:#B392F0">onCreate</span><span style="color:#E1E4E8">(savedInstanceState);</span></span>
+<span class="line"><span style="color:#B392F0">        setContentView</span><span style="color:#E1E4E8">(R.layout.activity_main);</span></span>
+<span class="line"><span style="color:#E1E4E8">        </span></span>
+<span class="line"><span style="color:#E1E4E8">        progressBar </span><span style="color:#F97583">=</span><span style="color:#B392F0"> findViewById</span><span style="color:#E1E4E8">(R.id.progressBar);</span></span>
+<span class="line"><span style="color:#E1E4E8">        recyclerView </span><span style="color:#F97583">=</span><span style="color:#B392F0"> findViewById</span><span style="color:#E1E4E8">(R.id.recyclerView);</span></span>
+<span class="line"><span style="color:#E1E4E8">        </span></span>
+<span class="line"><span style="color:#E1E4E8">        recyclerView.</span><span style="color:#B392F0">setLayoutManager</span><span style="color:#E1E4E8">(</span><span style="color:#F97583">new</span><span style="color:#B392F0"> LinearLayoutManager</span><span style="color:#E1E4E8">(</span><span style="color:#79B8FF">this</span><span style="color:#E1E4E8">));</span></span>
+<span class="line"><span style="color:#E1E4E8">        adapter </span><span style="color:#F97583">=</span><span style="color:#F97583"> new</span><span style="color:#B392F0"> UserAdapter</span><span style="color:#E1E4E8">();</span></span>
+<span class="line"><span style="color:#E1E4E8">        recyclerView.</span><span style="color:#B392F0">setAdapter</span><span style="color:#E1E4E8">(adapter);</span></span>
+<span class="line"><span style="color:#E1E4E8">        </span></span>
+<span class="line"><span style="color:#B392F0">        fetchUsers</span><span style="color:#E1E4E8">();</span></span>
+<span class="line"><span style="color:#E1E4E8">    }</span></span>
+<span class="line"><span style="color:#E1E4E8">    </span></span>
+<span class="line"><span style="color:#F97583">    private</span><span style="color:#F97583"> void</span><span style="color:#B392F0"> fetchUsers</span><span style="color:#E1E4E8">() {</span></span>
+<span class="line"><span style="color:#6A737D">        // Show progress bar</span></span>
+<span class="line"><span style="color:#E1E4E8">        progressBar.</span><span style="color:#B392F0">setVisibility</span><span style="color:#E1E4E8">(View.VISIBLE);</span></span>
+<span class="line"><span style="color:#E1E4E8">        </span></span>
+<span class="line"><span style="color:#E1E4E8">        ApiService apiService </span><span style="color:#F97583">=</span><span style="color:#E1E4E8"> RetrofitClient.</span><span style="color:#B392F0">getInstance</span><span style="color:#E1E4E8">().</span><span style="color:#B392F0">getApiService</span><span style="color:#E1E4E8">();</span></span>
+<span class="line"><span style="color:#E1E4E8">        </span></span>
+<span class="line"><span style="color:#E1E4E8">        disposables.</span><span style="color:#B392F0">add</span><span style="color:#E1E4E8">(</span></span>
+<span class="line"><span style="color:#E1E4E8">            apiService.</span><span style="color:#B392F0">getUsersRx</span><span style="color:#E1E4E8">()</span></span>
+<span class="line"><span style="color:#E1E4E8">                .</span><span style="color:#B392F0">subscribeOn</span><span style="color:#E1E4E8">(Schedulers.</span><span style="color:#B392F0">io</span><span style="color:#E1E4E8">())</span></span>
+<span class="line"><span style="color:#E1E4E8">                .</span><span style="color:#B392F0">observeOn</span><span style="color:#E1E4E8">(AndroidSchedulers.</span><span style="color:#B392F0">mainThread</span><span style="color:#E1E4E8">())</span></span>
+<span class="line"><span style="color:#E1E4E8">                .</span><span style="color:#B392F0">subscribe</span><span style="color:#E1E4E8">(</span></span>
+<span class="line"><span style="color:#E1E4E8">                    users </span><span style="color:#F97583">-></span><span style="color:#E1E4E8"> {</span></span>
+<span class="line"><span style="color:#6A737D">                        // Success response</span></span>
+<span class="line"><span style="color:#E1E4E8">                        progressBar.</span><span style="color:#B392F0">setVisibility</span><span style="color:#E1E4E8">(View.GONE);</span></span>
+<span class="line"><span style="color:#E1E4E8">                        adapter.</span><span style="color:#B392F0">setUsers</span><span style="color:#E1E4E8">(users);</span></span>
+<span class="line"><span style="color:#E1E4E8">                    },</span></span>
+<span class="line"><span style="color:#E1E4E8">                    throwable </span><span style="color:#F97583">-></span><span style="color:#E1E4E8"> {</span></span>
+<span class="line"><span style="color:#6A737D">                        // Error response</span></span>
+<span class="line"><span style="color:#E1E4E8">                        progressBar.</span><span style="color:#B392F0">setVisibility</span><span style="color:#E1E4E8">(View.GONE);</span></span>
+<span class="line"><span style="color:#E1E4E8">                        Toast.</span><span style="color:#B392F0">makeText</span><span style="color:#E1E4E8">(RxJavaActivity.this, </span></span>
+<span class="line"><span style="color:#9ECBFF">                                "Error: "</span><span style="color:#F97583"> +</span><span style="color:#E1E4E8"> throwable.</span><span style="color:#B392F0">getMessage</span><span style="color:#E1E4E8">(), </span></span>
+<span class="line"><span style="color:#E1E4E8">                                Toast.LENGTH_LONG).</span><span style="color:#B392F0">show</span><span style="color:#E1E4E8">();</span></span>
+<span class="line"><span style="color:#E1E4E8">                    }</span></span>
+<span class="line"><span style="color:#E1E4E8">                )</span></span>
+<span class="line"><span style="color:#E1E4E8">        );</span></span>
+<span class="line"><span style="color:#E1E4E8">    }</span></span>
+<span class="line"><span style="color:#E1E4E8">    </span></span>
+<span class="line"><span style="color:#E1E4E8">    @</span><span style="color:#F97583">Override</span></span>
+<span class="line"><span style="color:#F97583">    protected</span><span style="color:#F97583"> void</span><span style="color:#B392F0"> onDestroy</span><span style="color:#E1E4E8">() {</span></span>
+<span class="line"><span style="color:#79B8FF">        super</span><span style="color:#E1E4E8">.</span><span style="color:#B392F0">onDestroy</span><span style="color:#E1E4E8">();</span></span>
+<span class="line"><span style="color:#6A737D">        // Clear all disposables to prevent memory leaks</span></span>
+<span class="line"><span style="color:#E1E4E8">        disposables.</span><span style="color:#B392F0">clear</span><span style="color:#E1E4E8">();</span></span>
+<span class="line"><span style="color:#E1E4E8">    }</span></span>
+<span class="line"><span style="color:#E1E4E8">}</span></span></code></pre>
+<h2 id="approach-4-using-volley">Approach 4: Using Volley</h2>
+<p>Volley is another popular networking library for Android, developed by Google.</p>
+<h3 id="step-1-set-up-a-volley-request-queue">Step 1: Set up a Volley Request Queue</h3>
+<p>Create a singleton class to manage the Volley RequestQueue:</p>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8; overflow-x: auto;" tabindex="0" data-language="java"><code><span class="line"><span style="color:#F97583">public</span><span style="color:#F97583"> class</span><span style="color:#B392F0"> VolleySingleton</span><span style="color:#E1E4E8"> {</span></span>
+<span class="line"><span style="color:#F97583">    private</span><span style="color:#F97583"> static</span><span style="color:#E1E4E8"> VolleySingleton instance;</span></span>
+<span class="line"><span style="color:#F97583">    private</span><span style="color:#E1E4E8"> RequestQueue requestQueue;</span></span>
+<span class="line"><span style="color:#F97583">    private</span><span style="color:#F97583"> static</span><span style="color:#E1E4E8"> Context context;</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#F97583">    private</span><span style="color:#B392F0"> VolleySingleton</span><span style="color:#E1E4E8">(Context </span><span style="color:#FFAB70">context</span><span style="color:#E1E4E8">) {</span></span>
+<span class="line"><span style="color:#E1E4E8">        VolleySingleton.context </span><span style="color:#F97583">=</span><span style="color:#E1E4E8"> context;</span></span>
+<span class="line"><span style="color:#E1E4E8">        requestQueue </span><span style="color:#F97583">=</span><span style="color:#B392F0"> getRequestQueue</span><span style="color:#E1E4E8">();</span></span>
+<span class="line"><span style="color:#E1E4E8">    }</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#F97583">    public</span><span style="color:#F97583"> static</span><span style="color:#F97583"> synchronized</span><span style="color:#E1E4E8"> VolleySingleton </span><span style="color:#B392F0">getInstance</span><span style="color:#E1E4E8">(Context </span><span style="color:#FFAB70">context</span><span style="color:#E1E4E8">) {</span></span>
+<span class="line"><span style="color:#F97583">        if</span><span style="color:#E1E4E8"> (instance </span><span style="color:#F97583">==</span><span style="color:#79B8FF"> null</span><span style="color:#E1E4E8">) {</span></span>
+<span class="line"><span style="color:#E1E4E8">            instance </span><span style="color:#F97583">=</span><span style="color:#F97583"> new</span><span style="color:#B392F0"> VolleySingleton</span><span style="color:#E1E4E8">(context);</span></span>
+<span class="line"><span style="color:#E1E4E8">        }</span></span>
+<span class="line"><span style="color:#F97583">        return</span><span style="color:#E1E4E8"> instance;</span></span>
+<span class="line"><span style="color:#E1E4E8">    }</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#F97583">    public</span><span style="color:#E1E4E8"> RequestQueue </span><span style="color:#B392F0">getRequestQueue</span><span style="color:#E1E4E8">() {</span></span>
+<span class="line"><span style="color:#F97583">        if</span><span style="color:#E1E4E8"> (requestQueue </span><span style="color:#F97583">==</span><span style="color:#79B8FF"> null</span><span style="color:#E1E4E8">) {</span></span>
+<span class="line"><span style="color:#6A737D">            // getApplicationContext() is key, it keeps you from leaking the</span></span>
+<span class="line"><span style="color:#6A737D">            // Activity or BroadcastReceiver if someone passes one in.</span></span>
+<span class="line"><span style="color:#E1E4E8">            requestQueue </span><span style="color:#F97583">=</span><span style="color:#E1E4E8"> Volley.</span><span style="color:#B392F0">newRequestQueue</span><span style="color:#E1E4E8">(context.</span><span style="color:#B392F0">getApplicationContext</span><span style="color:#E1E4E8">());</span></span>
+<span class="line"><span style="color:#E1E4E8">        }</span></span>
+<span class="line"><span style="color:#F97583">        return</span><span style="color:#E1E4E8"> requestQueue;</span></span>
+<span class="line"><span style="color:#E1E4E8">    }</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#F97583">    public</span><span style="color:#E1E4E8"> &#x3C;</span><span style="color:#F97583">T</span><span style="color:#E1E4E8">> </span><span style="color:#F97583">void</span><span style="color:#B392F0"> addToRequestQueue</span><span style="color:#E1E4E8">(Request&#x3C;</span><span style="color:#F97583">T</span><span style="color:#E1E4E8">> </span><span style="color:#FFAB70">req</span><span style="color:#E1E4E8">) {</span></span>
+<span class="line"><span style="color:#B392F0">        getRequestQueue</span><span style="color:#E1E4E8">().</span><span style="color:#B392F0">add</span><span style="color:#E1E4E8">(req);</span></span>
+<span class="line"><span style="color:#E1E4E8">    }</span></span>
+<span class="line"><span style="color:#E1E4E8">}</span></span></code></pre>
+<h3 id="step-2-make-api-calls-with-volley-and-progress-indicator">Step 2: Make API Calls with Volley and Progress Indicator</h3>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8; overflow-x: auto;" tabindex="0" data-language="java"><code><span class="line"><span style="color:#F97583">public</span><span style="color:#F97583"> class</span><span style="color:#B392F0"> VolleyActivity</span><span style="color:#F97583"> extends</span><span style="color:#B392F0"> AppCompatActivity</span><span style="color:#E1E4E8"> {</span></span>
+<span class="line"><span style="color:#F97583">    private</span><span style="color:#E1E4E8"> ProgressBar progressBar;</span></span>
+<span class="line"><span style="color:#F97583">    private</span><span style="color:#E1E4E8"> RecyclerView recyclerView;</span></span>
+<span class="line"><span style="color:#F97583">    private</span><span style="color:#E1E4E8"> UserAdapter adapter;</span></span>
+<span class="line"><span style="color:#E1E4E8">    </span></span>
+<span class="line"><span style="color:#E1E4E8">    @</span><span style="color:#F97583">Override</span></span>
+<span class="line"><span style="color:#F97583">    protected</span><span style="color:#F97583"> void</span><span style="color:#B392F0"> onCreate</span><span style="color:#E1E4E8">(Bundle </span><span style="color:#FFAB70">savedInstanceState</span><span style="color:#E1E4E8">) {</span></span>
+<span class="line"><span style="color:#79B8FF">        super</span><span style="color:#E1E4E8">.</span><span style="color:#B392F0">onCreate</span><span style="color:#E1E4E8">(savedInstanceState);</span></span>
+<span class="line"><span style="color:#B392F0">        setContentView</span><span style="color:#E1E4E8">(R.layout.activity_main);</span></span>
+<span class="line"><span style="color:#E1E4E8">        </span></span>
+<span class="line"><span style="color:#E1E4E8">        progressBar </span><span style="color:#F97583">=</span><span style="color:#B392F0"> findViewById</span><span style="color:#E1E4E8">(R.id.progressBar);</span></span>
+<span class="line"><span style="color:#E1E4E8">        recyclerView </span><span style="color:#F97583">=</span><span style="color:#B392F0"> findViewById</span><span style="color:#E1E4E8">(R.id.recyclerView);</span></span>
+<span class="line"><span style="color:#E1E4E8">        </span></span>
+<span class="line"><span style="color:#E1E4E8">        recyclerView.</span><span style="color:#B392F0">setLayoutManager</span><span style="color:#E1E4E8">(</span><span style="color:#F97583">new</span><span style="color:#B392F0"> LinearLayoutManager</span><span style="color:#E1E4E8">(</span><span style="color:#79B8FF">this</span><span style="color:#E1E4E8">));</span></span>
+<span class="line"><span style="color:#E1E4E8">        adapter </span><span style="color:#F97583">=</span><span style="color:#F97583"> new</span><span style="color:#B392F0"> UserAdapter</span><span style="color:#E1E4E8">();</span></span>
+<span class="line"><span style="color:#E1E4E8">        recyclerView.</span><span style="color:#B392F0">setAdapter</span><span style="color:#E1E4E8">(adapter);</span></span>
+<span class="line"><span style="color:#E1E4E8">        </span></span>
+<span class="line"><span style="color:#B392F0">        fetchUsers</span><span style="color:#E1E4E8">();</span></span>
+<span class="line"><span style="color:#E1E4E8">    }</span></span>
+<span class="line"><span style="color:#E1E4E8">    </span></span>
+<span class="line"><span style="color:#F97583">    private</span><span style="color:#F97583"> void</span><span style="color:#B392F0"> fetchUsers</span><span style="color:#E1E4E8">() {</span></span>
+<span class="line"><span style="color:#6A737D">        // Show progress bar</span></span>
+<span class="line"><span style="color:#E1E4E8">        progressBar.</span><span style="color:#B392F0">setVisibility</span><span style="color:#E1E4E8">(View.VISIBLE);</span></span>
+<span class="line"><span style="color:#E1E4E8">        </span></span>
+<span class="line"><span style="color:#E1E4E8">        String url </span><span style="color:#F97583">=</span><span style="color:#9ECBFF"> "https://api.example.com/users"</span><span style="color:#E1E4E8">;</span></span>
+<span class="line"><span style="color:#E1E4E8">        </span></span>
+<span class="line"><span style="color:#E1E4E8">        JsonArrayRequest request </span><span style="color:#F97583">=</span><span style="color:#F97583"> new</span><span style="color:#B392F0"> JsonArrayRequest</span><span style="color:#E1E4E8">(</span></span>
+<span class="line"><span style="color:#E1E4E8">                Request.Method.GET,</span></span>
+<span class="line"><span style="color:#E1E4E8">                url,</span></span>
+<span class="line"><span style="color:#79B8FF">                null</span><span style="color:#E1E4E8">,</span></span>
+<span class="line"><span style="color:#E1E4E8">                response </span><span style="color:#F97583">-></span><span style="color:#E1E4E8"> {</span></span>
+<span class="line"><span style="color:#6A737D">                    // Hide progress bar</span></span>
+<span class="line"><span style="color:#E1E4E8">                    progressBar.</span><span style="color:#B392F0">setVisibility</span><span style="color:#E1E4E8">(View.GONE);</span></span>
+<span class="line"><span style="color:#E1E4E8">                    </span></span>
+<span class="line"><span style="color:#F97583">                    try</span><span style="color:#E1E4E8"> {</span></span>
+<span class="line"><span style="color:#E1E4E8">                        List&#x3C;</span><span style="color:#F97583">User</span><span style="color:#E1E4E8">> users </span><span style="color:#F97583">=</span><span style="color:#F97583"> new</span><span style="color:#E1E4E8"> ArrayList&#x3C;>();</span></span>
+<span class="line"><span style="color:#E1E4E8">                        Gson gson </span><span style="color:#F97583">=</span><span style="color:#F97583"> new</span><span style="color:#B392F0"> Gson</span><span style="color:#E1E4E8">();</span></span>
+<span class="line"><span style="color:#E1E4E8">                        </span></span>
+<span class="line"><span style="color:#F97583">                        for</span><span style="color:#E1E4E8"> (</span><span style="color:#F97583">int</span><span style="color:#E1E4E8"> i </span><span style="color:#F97583">=</span><span style="color:#79B8FF"> 0</span><span style="color:#E1E4E8">; i </span><span style="color:#F97583">&#x3C;</span><span style="color:#E1E4E8"> response.</span><span style="color:#B392F0">length</span><span style="color:#E1E4E8">(); i</span><span style="color:#F97583">++</span><span style="color:#E1E4E8">) {</span></span>
+<span class="line"><span style="color:#E1E4E8">                            JSONObject userJson </span><span style="color:#F97583">=</span><span style="color:#E1E4E8"> response.</span><span style="color:#B392F0">getJSONObject</span><span style="color:#E1E4E8">(i);</span></span>
+<span class="line"><span style="color:#E1E4E8">                            User user </span><span style="color:#F97583">=</span><span style="color:#E1E4E8"> gson.</span><span style="color:#B392F0">fromJson</span><span style="color:#E1E4E8">(userJson.</span><span style="color:#B392F0">toString</span><span style="color:#E1E4E8">(), User.class);</span></span>
+<span class="line"><span style="color:#E1E4E8">                            users.</span><span style="color:#B392F0">add</span><span style="color:#E1E4E8">(user);</span></span>
+<span class="line"><span style="color:#E1E4E8">                        }</span></span>
+<span class="line"><span style="color:#E1E4E8">                        </span></span>
+<span class="line"><span style="color:#E1E4E8">                        adapter.</span><span style="color:#B392F0">setUsers</span><span style="color:#E1E4E8">(users);</span></span>
+<span class="line"><span style="color:#E1E4E8">                    } </span><span style="color:#F97583">catch</span><span style="color:#E1E4E8"> (JSONException </span><span style="color:#FFAB70">e</span><span style="color:#E1E4E8">) {</span></span>
+<span class="line"><span style="color:#E1E4E8">                        Toast.</span><span style="color:#B392F0">makeText</span><span style="color:#E1E4E8">(VolleyActivity.this, </span></span>
+<span class="line"><span style="color:#9ECBFF">                                "Error parsing response"</span><span style="color:#E1E4E8">, </span></span>
+<span class="line"><span style="color:#E1E4E8">                                Toast.LENGTH_LONG).</span><span style="color:#B392F0">show</span><span style="color:#E1E4E8">();</span></span>
+<span class="line"><span style="color:#E1E4E8">                    }</span></span>
+<span class="line"><span style="color:#E1E4E8">                },</span></span>
+<span class="line"><span style="color:#E1E4E8">                error </span><span style="color:#F97583">-></span><span style="color:#E1E4E8"> {</span></span>
+<span class="line"><span style="color:#6A737D">                    // Hide progress bar</span></span>
+<span class="line"><span style="color:#E1E4E8">                    progressBar.</span><span style="color:#B392F0">setVisibility</span><span style="color:#E1E4E8">(View.GONE);</span></span>
+<span class="line"><span style="color:#E1E4E8">                    </span></span>
+<span class="line"><span style="color:#6A737D">                    // Handle error</span></span>
+<span class="line"><span style="color:#E1E4E8">                    String errorMessage </span><span style="color:#F97583">=</span><span style="color:#9ECBFF"> "Unknown error"</span><span style="color:#E1E4E8">;</span></span>
+<span class="line"><span style="color:#F97583">                    if</span><span style="color:#E1E4E8"> (error.networkResponse </span><span style="color:#F97583">!=</span><span style="color:#79B8FF"> null</span><span style="color:#E1E4E8">) {</span></span>
+<span class="line"><span style="color:#E1E4E8">                        errorMessage </span><span style="color:#F97583">=</span><span style="color:#9ECBFF"> "Error code: "</span><span style="color:#F97583"> +</span><span style="color:#E1E4E8"> error.networkResponse.statusCode;</span></span>
+<span class="line"><span style="color:#E1E4E8">                    } </span><span style="color:#F97583">else</span><span style="color:#F97583"> if</span><span style="color:#E1E4E8"> (error </span><span style="color:#F97583">instanceof</span><span style="color:#E1E4E8"> TimeoutError) {</span></span>
+<span class="line"><span style="color:#E1E4E8">                        errorMessage </span><span style="color:#F97583">=</span><span style="color:#9ECBFF"> "Connection timeout"</span><span style="color:#E1E4E8">;</span></span>
+<span class="line"><span style="color:#E1E4E8">                    } </span><span style="color:#F97583">else</span><span style="color:#F97583"> if</span><span style="color:#E1E4E8"> (error </span><span style="color:#F97583">instanceof</span><span style="color:#E1E4E8"> NoConnectionError) {</span></span>
+<span class="line"><span style="color:#E1E4E8">                        errorMessage </span><span style="color:#F97583">=</span><span style="color:#9ECBFF"> "No internet connection"</span><span style="color:#E1E4E8">;</span></span>
+<span class="line"><span style="color:#E1E4E8">                    }</span></span>
+<span class="line"><span style="color:#E1E4E8">                    </span></span>
+<span class="line"><span style="color:#E1E4E8">                    Toast.</span><span style="color:#B392F0">makeText</span><span style="color:#E1E4E8">(VolleyActivity.this, </span></span>
+<span class="line"><span style="color:#E1E4E8">                            errorMessage, </span></span>
+<span class="line"><span style="color:#E1E4E8">                            Toast.LENGTH_LONG).</span><span style="color:#B392F0">show</span><span style="color:#E1E4E8">();</span></span>
+<span class="line"><span style="color:#E1E4E8">                }</span></span>
+<span class="line"><span style="color:#E1E4E8">        );</span></span>
+<span class="line"><span style="color:#E1E4E8">        </span></span>
+<span class="line"><span style="color:#6A737D">        // Add the request to the RequestQueue</span></span>
+<span class="line"><span style="color:#E1E4E8">        VolleySingleton.</span><span style="color:#B392F0">getInstance</span><span style="color:#E1E4E8">(</span><span style="color:#79B8FF">this</span><span style="color:#E1E4E8">).</span><span style="color:#B392F0">addToRequestQueue</span><span style="color:#E1E4E8">(request);</span></span>
+<span class="line"><span style="color:#E1E4E8">    }</span></span>
+<span class="line"><span style="color:#E1E4E8">}</span></span></code></pre>
+<h2 id="different-types-of-progress-indicators">Different Types of Progress Indicators</h2>
+<p>Android provides several types of progress indicators for different use cases:</p>
+<h3 id="1-circular-progress-bar">1. Circular Progress Bar</h3>
+<p>The standard <code>ProgressBar</code> displays a circular animation. It’s useful for indicating that an operation is in progress without specifying how long it will take.</p>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8; overflow-x: auto;" tabindex="0" data-language="xml"><code><span class="line"><span style="color:#E1E4E8">&#x3C;</span><span style="color:#85E89D">ProgressBar</span></span>
+<span class="line"><span style="color:#B392F0">    android:id</span><span style="color:#E1E4E8">=</span><span style="color:#9ECBFF">"@+id/progressBar"</span></span>
+<span class="line"><span style="color:#B392F0">    android:layout_width</span><span style="color:#E1E4E8">=</span><span style="color:#9ECBFF">"wrap_content"</span></span>
+<span class="line"><span style="color:#B392F0">    android:layout_height</span><span style="color:#E1E4E8">=</span><span style="color:#9ECBFF">"wrap_content"</span></span>
+<span class="line"><span style="color:#B392F0">    android:layout_centerInParent</span><span style="color:#E1E4E8">=</span><span style="color:#9ECBFF">"true"</span><span style="color:#E1E4E8"> /></span></span></code></pre>
+<h3 id="2-horizontal-progress-bar">2. Horizontal Progress Bar</h3>
+<p>For operations where you can track progress (like file downloads), a horizontal progress bar is more appropriate:</p>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8; overflow-x: auto;" tabindex="0" data-language="xml"><code><span class="line"><span style="color:#E1E4E8">&#x3C;</span><span style="color:#85E89D">ProgressBar</span></span>
+<span class="line"><span style="color:#B392F0">    android:id</span><span style="color:#E1E4E8">=</span><span style="color:#9ECBFF">"@+id/progressBarHorizontal"</span></span>
+<span class="line"><span style="color:#B392F0">    style</span><span style="color:#E1E4E8">=</span><span style="color:#9ECBFF">"?android:attr/progressBarStyleHorizontal"</span></span>
+<span class="line"><span style="color:#B392F0">    android:layout_width</span><span style="color:#E1E4E8">=</span><span style="color:#9ECBFF">"match_parent"</span></span>
+<span class="line"><span style="color:#B392F0">    android:layout_height</span><span style="color:#E1E4E8">=</span><span style="color:#9ECBFF">"wrap_content"</span></span>
+<span class="line"><span style="color:#B392F0">    android:max</span><span style="color:#E1E4E8">=</span><span style="color:#9ECBFF">"100"</span><span style="color:#E1E4E8"> /></span></span></code></pre>
+<p>Update the progress in code:</p>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8; overflow-x: auto;" tabindex="0" data-language="java"><code><span class="line"><span style="color:#E1E4E8">progressBarHorizontal.</span><span style="color:#B392F0">setProgress</span><span style="color:#E1E4E8">(progress);</span></span></code></pre>
+<h3 id="3-swiperefreshlayout">3. SwipeRefreshLayout</h3>
+<p>For pull-to-refresh functionality:</p>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8; overflow-x: auto;" tabindex="0" data-language="xml"><code><span class="line"><span style="color:#E1E4E8">&#x3C;</span><span style="color:#85E89D">androidx.swiperefreshlayout.widget.SwipeRefreshLayout</span></span>
+<span class="line"><span style="color:#B392F0">    android:id</span><span style="color:#E1E4E8">=</span><span style="color:#9ECBFF">"@+id/swipeRefreshLayout"</span></span>
+<span class="line"><span style="color:#B392F0">    android:layout_width</span><span style="color:#E1E4E8">=</span><span style="color:#9ECBFF">"match_parent"</span></span>
+<span class="line"><span style="color:#B392F0">    android:layout_height</span><span style="color:#E1E4E8">=</span><span style="color:#9ECBFF">"match_parent"</span><span style="color:#E1E4E8">></span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#E1E4E8">    &#x3C;</span><span style="color:#85E89D">androidx.recyclerview.widget.RecyclerView</span></span>
+<span class="line"><span style="color:#B392F0">        android:id</span><span style="color:#E1E4E8">=</span><span style="color:#9ECBFF">"@+id/recyclerView"</span></span>
+<span class="line"><span style="color:#B392F0">        android:layout_width</span><span style="color:#E1E4E8">=</span><span style="color:#9ECBFF">"match_parent"</span></span>
+<span class="line"><span style="color:#B392F0">        android:layout_height</span><span style="color:#E1E4E8">=</span><span style="color:#9ECBFF">"match_parent"</span><span style="color:#E1E4E8"> /></span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#E1E4E8">&#x3C;/</span><span style="color:#85E89D">androidx.swiperefreshlayout.widget.SwipeRefreshLayout</span><span style="color:#E1E4E8">></span></span></code></pre>
+<p>In your activity:</p>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8; overflow-x: auto;" tabindex="0" data-language="java"><code><span class="line"><span style="color:#E1E4E8">SwipeRefreshLayout swipeRefreshLayout </span><span style="color:#F97583">=</span><span style="color:#B392F0"> findViewById</span><span style="color:#E1E4E8">(R.id.swipeRefreshLayout);</span></span>
+<span class="line"><span style="color:#E1E4E8">swipeRefreshLayout.</span><span style="color:#B392F0">setOnRefreshListener</span><span style="color:#E1E4E8">(() </span><span style="color:#F97583">-></span><span style="color:#E1E4E8"> {</span></span>
+<span class="line"><span style="color:#B392F0">    fetchUsers</span><span style="color:#E1E4E8">();</span></span>
+<span class="line"><span style="color:#E1E4E8">});</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#6A737D">// In your network callback:</span></span>
+<span class="line"><span style="color:#E1E4E8">swipeRefreshLayout.</span><span style="color:#B392F0">setRefreshing</span><span style="color:#E1E4E8">(</span><span style="color:#79B8FF">false</span><span style="color:#E1E4E8">);</span></span></code></pre>
+<h3 id="4-content-loading-progress-bar">4. Content Loading Progress Bar</h3>
+<p>This is a specialized progress bar that handles delay showing/hiding to prevent flickering for quick operations:</p>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8; overflow-x: auto;" tabindex="0" data-language="xml"><code><span class="line"><span style="color:#E1E4E8">&#x3C;</span><span style="color:#85E89D">androidx.core.widget.ContentLoadingProgressBar</span></span>
+<span class="line"><span style="color:#B392F0">    android:id</span><span style="color:#E1E4E8">=</span><span style="color:#9ECBFF">"@+id/contentLoadingProgressBar"</span></span>
+<span class="line"><span style="color:#B392F0">    style</span><span style="color:#E1E4E8">=</span><span style="color:#9ECBFF">"?android:attr/progressBarStyle"</span></span>
+<span class="line"><span style="color:#B392F0">    android:layout_width</span><span style="color:#E1E4E8">=</span><span style="color:#9ECBFF">"wrap_content"</span></span>
+<span class="line"><span style="color:#B392F0">    android:layout_height</span><span style="color:#E1E4E8">=</span><span style="color:#9ECBFF">"wrap_content"</span></span>
+<span class="line"><span style="color:#B392F0">    android:layout_centerInParent</span><span style="color:#E1E4E8">=</span><span style="color:#9ECBFF">"true"</span><span style="color:#E1E4E8"> /></span></span></code></pre>
+<p>In your activity:</p>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8; overflow-x: auto;" tabindex="0" data-language="java"><code><span class="line"><span style="color:#E1E4E8">ContentLoadingProgressBar contentLoadingProgressBar </span><span style="color:#F97583">=</span><span style="color:#B392F0"> findViewById</span><span style="color:#E1E4E8">(R.id.contentLoadingProgressBar);</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#6A737D">// Show with a delay</span></span>
+<span class="line"><span style="color:#E1E4E8">contentLoadingProgressBar.</span><span style="color:#B392F0">show</span><span style="color:#E1E4E8">();</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#6A737D">// Hide when done</span></span>
+<span class="line"><span style="color:#E1E4E8">contentLoadingProgressBar.</span><span style="color:#B392F0">hide</span><span style="color:#E1E4E8">();</span></span></code></pre>
+<h3 id="5-custom-shimmer-effect">5. Custom Shimmer Effect</h3>
+<p>For a more modern approach, you can use a shimmer effect to show loading states:</p>
+<p>Add the shimmer library dependency:</p>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8; overflow-x: auto;" tabindex="0" data-language="plaintext"><code><span class="line"><span>implementation 'com.facebook.shimmer:shimmer:0.5.0'</span></span></code></pre>
+<p>Create a shimmer layout:</p>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8; overflow-x: auto;" tabindex="0" data-language="xml"><code><span class="line"><span style="color:#E1E4E8">&#x3C;</span><span style="color:#85E89D">com.facebook.shimmer.ShimmerFrameLayout</span></span>
+<span class="line"><span style="color:#B392F0">    android:id</span><span style="color:#E1E4E8">=</span><span style="color:#9ECBFF">"@+id/shimmerFrameLayout"</span></span>
+<span class="line"><span style="color:#B392F0">    android:layout_width</span><span style="color:#E1E4E8">=</span><span style="color:#9ECBFF">"match_parent"</span></span>
+<span class="line"><span style="color:#B392F0">    android:layout_height</span><span style="color:#E1E4E8">=</span><span style="color:#9ECBFF">"match_parent"</span><span style="color:#E1E4E8">></span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#6A737D">    &#x3C;!-- Layout to show during loading --></span></span>
+<span class="line"><span style="color:#E1E4E8">    &#x3C;</span><span style="color:#85E89D">LinearLayout</span></span>
+<span class="line"><span style="color:#B392F0">        android:layout_width</span><span style="color:#E1E4E8">=</span><span style="color:#9ECBFF">"match_parent"</span></span>
+<span class="line"><span style="color:#B392F0">        android:layout_height</span><span style="color:#E1E4E8">=</span><span style="color:#9ECBFF">"wrap_content"</span></span>
+<span class="line"><span style="color:#B392F0">        android:orientation</span><span style="color:#E1E4E8">=</span><span style="color:#9ECBFF">"vertical"</span><span style="color:#E1E4E8">></span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#6A737D">        &#x3C;!-- Repeat this item for a list effect --></span></span>
+<span class="line"><span style="color:#E1E4E8">        &#x3C;</span><span style="color:#85E89D">include</span><span style="color:#B392F0"> layout</span><span style="color:#E1E4E8">=</span><span style="color:#9ECBFF">"@layout/item_shimmer"</span><span style="color:#E1E4E8"> /></span></span>
+<span class="line"><span style="color:#E1E4E8">        &#x3C;</span><span style="color:#85E89D">include</span><span style="color:#B392F0"> layout</span><span style="color:#E1E4E8">=</span><span style="color:#9ECBFF">"@layout/item_shimmer"</span><span style="color:#E1E4E8"> /></span></span>
+<span class="line"><span style="color:#E1E4E8">        &#x3C;</span><span style="color:#85E89D">include</span><span style="color:#B392F0"> layout</span><span style="color:#E1E4E8">=</span><span style="color:#9ECBFF">"@layout/item_shimmer"</span><span style="color:#E1E4E8"> /></span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#E1E4E8">    &#x3C;/</span><span style="color:#85E89D">LinearLayout</span><span style="color:#E1E4E8">></span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#E1E4E8">&#x3C;/</span><span style="color:#85E89D">com.facebook.shimmer.ShimmerFrameLayout</span><span style="color:#E1E4E8">></span></span></code></pre>
+<p>Create <code>item_shimmer.xml</code>:</p>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8; overflow-x: auto;" tabindex="0" data-language="xml"><code><span class="line"><span style="color:#E1E4E8">&#x3C;?</span><span style="color:#85E89D">xml</span><span style="color:#B392F0"> version</span><span style="color:#E1E4E8">=</span><span style="color:#9ECBFF">"1.0"</span><span style="color:#B392F0"> encoding</span><span style="color:#E1E4E8">=</span><span style="color:#9ECBFF">"utf-8"</span><span style="color:#E1E4E8">?></span></span>
+<span class="line"><span style="color:#E1E4E8">&#x3C;</span><span style="color:#85E89D">androidx.cardview.widget.CardView</span><span style="color:#B392F0"> xmlns:android</span><span style="color:#E1E4E8">=</span><span style="color:#9ECBFF">"http://schemas.android.com/apk/res/android"</span></span>
+<span class="line"><span style="color:#B392F0">    xmlns:app</span><span style="color:#E1E4E8">=</span><span style="color:#9ECBFF">"http://schemas.android.com/apk/res-auto"</span></span>
+<span class="line"><span style="color:#B392F0">    android:layout_width</span><span style="color:#E1E4E8">=</span><span style="color:#9ECBFF">"match_parent"</span></span>
+<span class="line"><span style="color:#B392F0">    android:layout_height</span><span style="color:#E1E4E8">=</span><span style="color:#9ECBFF">"wrap_content"</span></span>
+<span class="line"><span style="color:#B392F0">    android:layout_margin</span><span style="color:#E1E4E8">=</span><span style="color:#9ECBFF">"8dp"</span></span>
+<span class="line"><span style="color:#B392F0">    app:cardCornerRadius</span><span style="color:#E1E4E8">=</span><span style="color:#9ECBFF">"4dp"</span></span>
+<span class="line"><span style="color:#B392F0">    app:cardElevation</span><span style="color:#E1E4E8">=</span><span style="color:#9ECBFF">"4dp"</span><span style="color:#E1E4E8">></span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#E1E4E8">    &#x3C;</span><span style="color:#85E89D">LinearLayout</span></span>
+<span class="line"><span style="color:#B392F0">        android:layout_width</span><span style="color:#E1E4E8">=</span><span style="color:#9ECBFF">"match_parent"</span></span>
+<span class="line"><span style="color:#B392F0">        android:layout_height</span><span style="color:#E1E4E8">=</span><span style="color:#9ECBFF">"wrap_content"</span></span>
+<span class="line"><span style="color:#B392F0">        android:orientation</span><span style="color:#E1E4E8">=</span><span style="color:#9ECBFF">"vertical"</span></span>
+<span class="line"><span style="color:#B392F0">        android:padding</span><span style="color:#E1E4E8">=</span><span style="color:#9ECBFF">"16dp"</span><span style="color:#E1E4E8">></span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#E1E4E8">        &#x3C;</span><span style="color:#85E89D">View</span></span>
+<span class="line"><span style="color:#B392F0">            android:layout_width</span><span style="color:#E1E4E8">=</span><span style="color:#9ECBFF">"150dp"</span></span>
+<span class="line"><span style="color:#B392F0">            android:layout_height</span><span style="color:#E1E4E8">=</span><span style="color:#9ECBFF">"18dp"</span></span>
+<span class="line"><span style="color:#B392F0">            android:background</span><span style="color:#E1E4E8">=</span><span style="color:#9ECBFF">"@color/shimmer_color"</span><span style="color:#E1E4E8"> /></span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#E1E4E8">        &#x3C;</span><span style="color:#85E89D">View</span></span>
+<span class="line"><span style="color:#B392F0">            android:layout_width</span><span style="color:#E1E4E8">=</span><span style="color:#9ECBFF">"200dp"</span></span>
+<span class="line"><span style="color:#B392F0">            android:layout_height</span><span style="color:#E1E4E8">=</span><span style="color:#9ECBFF">"16dp"</span></span>
+<span class="line"><span style="color:#B392F0">            android:layout_marginTop</span><span style="color:#E1E4E8">=</span><span style="color:#9ECBFF">"8dp"</span></span>
+<span class="line"><span style="color:#B392F0">            android:background</span><span style="color:#E1E4E8">=</span><span style="color:#9ECBFF">"@color/shimmer_color"</span><span style="color:#E1E4E8"> /></span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#E1E4E8">    &#x3C;/</span><span style="color:#85E89D">LinearLayout</span><span style="color:#E1E4E8">></span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#E1E4E8">&#x3C;/</span><span style="color:#85E89D">androidx.cardview.widget.CardView</span><span style="color:#E1E4E8">></span></span></code></pre>
+<p>Control the shimmer effect in code:</p>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8; overflow-x: auto;" tabindex="0" data-language="java"><code><span class="line"><span style="color:#E1E4E8">ShimmerFrameLayout shimmerFrameLayout </span><span style="color:#F97583">=</span><span style="color:#B392F0"> findViewById</span><span style="color:#E1E4E8">(R.id.shimmerFrameLayout);</span></span>
+<span class="line"><span style="color:#E1E4E8">RecyclerView recyclerView </span><span style="color:#F97583">=</span><span style="color:#B392F0"> findViewById</span><span style="color:#E1E4E8">(R.id.recyclerView);</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#6A737D">// Show shimmer, hide content</span></span>
+<span class="line"><span style="color:#E1E4E8">shimmerFrameLayout.</span><span style="color:#B392F0">setVisibility</span><span style="color:#E1E4E8">(View.VISIBLE);</span></span>
+<span class="line"><span style="color:#E1E4E8">shimmerFrameLayout.</span><span style="color:#B392F0">startShimmer</span><span style="color:#E1E4E8">();</span></span>
+<span class="line"><span style="color:#E1E4E8">recyclerView.</span><span style="color:#B392F0">setVisibility</span><span style="color:#E1E4E8">(View.GONE);</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#6A737D">// When data is loaded:</span></span>
+<span class="line"><span style="color:#E1E4E8">shimmerFrameLayout.</span><span style="color:#B392F0">stopShimmer</span><span style="color:#E1E4E8">();</span></span>
+<span class="line"><span style="color:#E1E4E8">shimmerFrameLayout.</span><span style="color:#B392F0">setVisibility</span><span style="color:#E1E4E8">(View.GONE);</span></span>
+<span class="line"><span style="color:#E1E4E8">recyclerView.</span><span style="color:#B392F0">setVisibility</span><span style="color:#E1E4E8">(View.VISIBLE);</span></span></code></pre>
+<h2 id="implementing-a-loading-state-pattern">Implementing a Loading State Pattern</h2>
+<p>For a more structured approach, you can implement a loading state pattern using an enum:</p>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8; overflow-x: auto;" tabindex="0" data-language="java"><code><span class="line"><span style="color:#F97583">public</span><span style="color:#F97583"> enum</span><span style="color:#B392F0"> LoadingState</span><span style="color:#E1E4E8"> {</span></span>
+<span class="line"><span style="color:#79B8FF">    LOADING</span><span style="color:#E1E4E8">,</span></span>
+<span class="line"><span style="color:#79B8FF">    SUCCESS</span><span style="color:#E1E4E8">,</span></span>
+<span class="line"><span style="color:#79B8FF">    ERROR</span></span>
+<span class="line"><span style="color:#E1E4E8">}</span></span></code></pre>
+<p>Then update your UI based on the current state:</p>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8; overflow-x: auto;" tabindex="0" data-language="java"><code><span class="line"><span style="color:#F97583">private</span><span style="color:#F97583"> void</span><span style="color:#B392F0"> updateUI</span><span style="color:#E1E4E8">(LoadingState state, List</span><span style="color:#F97583">&#x3C;</span><span style="color:#E1E4E8">User</span><span style="color:#F97583">></span><span style="color:#E1E4E8"> data, String errorMessage) {</span></span>
+<span class="line"><span style="color:#F97583">    switch</span><span style="color:#E1E4E8"> (state) {</span></span>
+<span class="line"><span style="color:#F97583">        case</span><span style="color:#E1E4E8"> LOADING</span><span style="color:#F97583">:</span></span>
+<span class="line"><span style="color:#E1E4E8">            progressBar.</span><span style="color:#B392F0">setVisibility</span><span style="color:#E1E4E8">(View.VISIBLE);</span></span>
+<span class="line"><span style="color:#E1E4E8">            recyclerView.</span><span style="color:#B392F0">setVisibility</span><span style="color:#E1E4E8">(View.GONE);</span></span>
+<span class="line"><span style="color:#E1E4E8">            errorView.</span><span style="color:#B392F0">setVisibility</span><span style="color:#E1E4E8">(View.GONE);</span></span>
+<span class="line"><span style="color:#F97583">            break</span><span style="color:#E1E4E8">;</span></span>
+<span class="line"><span style="color:#E1E4E8">            </span></span>
+<span class="line"><span style="color:#F97583">        case</span><span style="color:#E1E4E8"> SUCCESS</span><span style="color:#F97583">:</span></span>
+<span class="line"><span style="color:#E1E4E8">            progressBar.</span><span style="color:#B392F0">setVisibility</span><span style="color:#E1E4E8">(View.GONE);</span></span>
+<span class="line"><span style="color:#E1E4E8">            recyclerView.</span><span style="color:#B392F0">setVisibility</span><span style="color:#E1E4E8">(View.VISIBLE);</span></span>
+<span class="line"><span style="color:#E1E4E8">            errorView.</span><span style="color:#B392F0">setVisibility</span><span style="color:#E1E4E8">(View.GONE);</span></span>
+<span class="line"><span style="color:#E1E4E8">            adapter.</span><span style="color:#B392F0">setUsers</span><span style="color:#E1E4E8">(data);</span></span>
+<span class="line"><span style="color:#F97583">            break</span><span style="color:#E1E4E8">;</span></span>
+<span class="line"><span style="color:#E1E4E8">            </span></span>
+<span class="line"><span style="color:#F97583">        case</span><span style="color:#E1E4E8"> ERROR</span><span style="color:#F97583">:</span></span>
+<span class="line"><span style="color:#E1E4E8">            progressBar.</span><span style="color:#B392F0">setVisibility</span><span style="color:#E1E4E8">(View.GONE);</span></span>
+<span class="line"><span style="color:#E1E4E8">            recyclerView.</span><span style="color:#B392F0">setVisibility</span><span style="color:#E1E4E8">(View.GONE);</span></span>
+<span class="line"><span style="color:#E1E4E8">            errorView.</span><span style="color:#B392F0">setVisibility</span><span style="color:#E1E4E8">(View.VISIBLE);</span></span>
+<span class="line"><span style="color:#E1E4E8">            errorTextView.</span><span style="color:#B392F0">setText</span><span style="color:#E1E4E8">(errorMessage);</span></span>
+<span class="line"><span style="color:#F97583">            break</span><span style="color:#E1E4E8">;</span></span>
+<span class="line"><span style="color:#E1E4E8">    }</span></span>
+<span class="line"><span style="color:#E1E4E8">}</span></span></code></pre>
+<h2 id="handling-configuration-changes">Handling Configuration Changes</h2>
+<p>To handle configuration changes (like screen rotation) properly:</p>
+<h3 id="1-use-viewmodel-with-livedata">1. Use ViewModel with LiveData</h3>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8; overflow-x: auto;" tabindex="0" data-language="java"><code><span class="line"><span style="color:#F97583">public</span><span style="color:#F97583"> class</span><span style="color:#B392F0"> UserViewModel</span><span style="color:#F97583"> extends</span><span style="color:#B392F0"> ViewModel</span><span style="color:#E1E4E8"> {</span></span>
+<span class="line"><span style="color:#F97583">    private</span><span style="color:#E1E4E8"> MutableLiveData&#x3C;List&#x3C;</span><span style="color:#F97583">User</span><span style="color:#E1E4E8">>> users </span><span style="color:#F97583">=</span><span style="color:#F97583"> new</span><span style="color:#E1E4E8"> MutableLiveData&#x3C;>();</span></span>
+<span class="line"><span style="color:#F97583">    private</span><span style="color:#E1E4E8"> MutableLiveData&#x3C;</span><span style="color:#F97583">Boolean</span><span style="color:#E1E4E8">> isLoading </span><span style="color:#F97583">=</span><span style="color:#F97583"> new</span><span style="color:#E1E4E8"> MutableLiveData&#x3C;>(</span><span style="color:#79B8FF">false</span><span style="color:#E1E4E8">);</span></span>
+<span class="line"><span style="color:#F97583">    private</span><span style="color:#E1E4E8"> MutableLiveData&#x3C;</span><span style="color:#F97583">String</span><span style="color:#E1E4E8">> error </span><span style="color:#F97583">=</span><span style="color:#F97583"> new</span><span style="color:#E1E4E8"> MutableLiveData&#x3C;>();</span></span>
+<span class="line"><span style="color:#E1E4E8">    </span></span>
+<span class="line"><span style="color:#F97583">    private</span><span style="color:#E1E4E8"> CompositeDisposable disposables </span><span style="color:#F97583">=</span><span style="color:#F97583"> new</span><span style="color:#B392F0"> CompositeDisposable</span><span style="color:#E1E4E8">();</span></span>
+<span class="line"><span style="color:#E1E4E8">    </span></span>
+<span class="line"><span style="color:#F97583">    public</span><span style="color:#E1E4E8"> LiveData&#x3C;List&#x3C;</span><span style="color:#F97583">User</span><span style="color:#E1E4E8">>> </span><span style="color:#B392F0">getUsers</span><span style="color:#E1E4E8">() {</span></span>
+<span class="line"><span style="color:#F97583">        return</span><span style="color:#E1E4E8"> users;</span></span>
+<span class="line"><span style="color:#E1E4E8">    }</span></span>
+<span class="line"><span style="color:#E1E4E8">    </span></span>
+<span class="line"><span style="color:#F97583">    public</span><span style="color:#E1E4E8"> LiveData&#x3C;</span><span style="color:#F97583">Boolean</span><span style="color:#E1E4E8">> </span><span style="color:#B392F0">getIsLoading</span><span style="color:#E1E4E8">() {</span></span>
+<span class="line"><span style="color:#F97583">        return</span><span style="color:#E1E4E8"> isLoading;</span></span>
+<span class="line"><span style="color:#E1E4E8">    }</span></span>
+<span class="line"><span style="color:#E1E4E8">    </span></span>
+<span class="line"><span style="color:#F97583">    public</span><span style="color:#E1E4E8"> LiveData&#x3C;</span><span style="color:#F97583">String</span><span style="color:#E1E4E8">> </span><span style="color:#B392F0">getError</span><span style="color:#E1E4E8">() {</span></span>
+<span class="line"><span style="color:#F97583">        return</span><span style="color:#E1E4E8"> error;</span></span>
+<span class="line"><span style="color:#E1E4E8">    }</span></span>
+<span class="line"><span style="color:#E1E4E8">    </span></span>
+<span class="line"><span style="color:#F97583">    public</span><span style="color:#F97583"> void</span><span style="color:#B392F0"> fetchUsers</span><span style="color:#E1E4E8">() {</span></span>
+<span class="line"><span style="color:#E1E4E8">        isLoading.</span><span style="color:#B392F0">setValue</span><span style="color:#E1E4E8">(</span><span style="color:#79B8FF">true</span><span style="color:#E1E4E8">);</span></span>
+<span class="line"><span style="color:#E1E4E8">        </span></span>
+<span class="line"><span style="color:#E1E4E8">        ApiService apiService </span><span style="color:#F97583">=</span><span style="color:#E1E4E8"> RetrofitClient.</span><span style="color:#B392F0">getInstance</span><span style="color:#E1E4E8">().</span><span style="color:#B392F0">getApiService</span><span style="color:#E1E4E8">();</span></span>
+<span class="line"><span style="color:#E1E4E8">        </span></span>
+<span class="line"><span style="color:#E1E4E8">        disposables.</span><span style="color:#B392F0">add</span><span style="color:#E1E4E8">(</span></span>
+<span class="line"><span style="color:#E1E4E8">            apiService.</span><span style="color:#B392F0">getUsersRx</span><span style="color:#E1E4E8">()</span></span>
+<span class="line"><span style="color:#E1E4E8">                .</span><span style="color:#B392F0">subscribeOn</span><span style="color:#E1E4E8">(Schedulers.</span><span style="color:#B392F0">io</span><span style="color:#E1E4E8">())</span></span>
+<span class="line"><span style="color:#E1E4E8">                .</span><span style="color:#B392F0">observeOn</span><span style="color:#E1E4E8">(AndroidSchedulers.</span><span style="color:#B392F0">mainThread</span><span style="color:#E1E4E8">())</span></span>
+<span class="line"><span style="color:#E1E4E8">                .</span><span style="color:#B392F0">subscribe</span><span style="color:#E1E4E8">(</span></span>
+<span class="line"><span style="color:#E1E4E8">                    result </span><span style="color:#F97583">-></span><span style="color:#E1E4E8"> {</span></span>
+<span class="line"><span style="color:#E1E4E8">                        isLoading.</span><span style="color:#B392F0">setValue</span><span style="color:#E1E4E8">(</span><span style="color:#79B8FF">false</span><span style="color:#E1E4E8">);</span></span>
+<span class="line"><span style="color:#E1E4E8">                        users.</span><span style="color:#B392F0">setValue</span><span style="color:#E1E4E8">(result);</span></span>
+<span class="line"><span style="color:#E1E4E8">                    },</span></span>
+<span class="line"><span style="color:#E1E4E8">                    throwable </span><span style="color:#F97583">-></span><span style="color:#E1E4E8"> {</span></span>
+<span class="line"><span style="color:#E1E4E8">                        isLoading.</span><span style="color:#B392F0">setValue</span><span style="color:#E1E4E8">(</span><span style="color:#79B8FF">false</span><span style="color:#E1E4E8">);</span></span>
+<span class="line"><span style="color:#E1E4E8">                        error.</span><span style="color:#B392F0">setValue</span><span style="color:#E1E4E8">(throwable.</span><span style="color:#B392F0">getMessage</span><span style="color:#E1E4E8">());</span></span>
+<span class="line"><span style="color:#E1E4E8">                    }</span></span>
+<span class="line"><span style="color:#E1E4E8">                )</span></span>
+<span class="line"><span style="color:#E1E4E8">        );</span></span>
+<span class="line"><span style="color:#E1E4E8">    }</span></span>
+<span class="line"><span style="color:#E1E4E8">    </span></span>
+<span class="line"><span style="color:#E1E4E8">    @</span><span style="color:#F97583">Override</span></span>
+<span class="line"><span style="color:#F97583">    protected</span><span style="color:#F97583"> void</span><span style="color:#B392F0"> onCleared</span><span style="color:#E1E4E8">() {</span></span>
+<span class="line"><span style="color:#79B8FF">        super</span><span style="color:#E1E4E8">.</span><span style="color:#B392F0">onCleared</span><span style="color:#E1E4E8">();</span></span>
+<span class="line"><span style="color:#E1E4E8">        disposables.</span><span style="color:#B392F0">clear</span><span style="color:#E1E4E8">();</span></span>
+<span class="line"><span style="color:#E1E4E8">    }</span></span>
+<span class="line"><span style="color:#E1E4E8">}</span></span></code></pre>
+<p>In your activity:</p>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8; overflow-x: auto;" tabindex="0" data-language="java"><code><span class="line"><span style="color:#F97583">public</span><span style="color:#F97583"> class</span><span style="color:#B392F0"> UserActivity</span><span style="color:#F97583"> extends</span><span style="color:#B392F0"> AppCompatActivity</span><span style="color:#E1E4E8"> {</span></span>
+<span class="line"><span style="color:#F97583">    private</span><span style="color:#E1E4E8"> ProgressBar progressBar;</span></span>
+<span class="line"><span style="color:#F97583">    private</span><span style="color:#E1E4E8"> RecyclerView recyclerView;</span></span>
+<span class="line"><span style="color:#F97583">    private</span><span style="color:#E1E4E8"> TextView errorTextView;</span></span>
+<span class="line"><span style="color:#F97583">    private</span><span style="color:#E1E4E8"> UserAdapter adapter;</span></span>
+<span class="line"><span style="color:#F97583">    private</span><span style="color:#E1E4E8"> UserViewModel viewModel;</span></span>
+<span class="line"><span style="color:#E1E4E8">    </span></span>
+<span class="line"><span style="color:#E1E4E8">    @</span><span style="color:#F97583">Override</span></span>
+<span class="line"><span style="color:#F97583">    protected</span><span style="color:#F97583"> void</span><span style="color:#B392F0"> onCreate</span><span style="color:#E1E4E8">(Bundle </span><span style="color:#FFAB70">savedInstanceState</span><span style="color:#E1E4E8">) {</span></span>
+<span class="line"><span style="color:#79B8FF">        super</span><span style="color:#E1E4E8">.</span><span style="color:#B392F0">onCreate</span><span style="color:#E1E4E8">(savedInstanceState);</span></span>
+<span class="line"><span style="color:#B392F0">        setContentView</span><span style="color:#E1E4E8">(R.layout.activity_user);</span></span>
+<span class="line"><span style="color:#E1E4E8">        </span></span>
+<span class="line"><span style="color:#E1E4E8">        progressBar </span><span style="color:#F97583">=</span><span style="color:#B392F0"> findViewById</span><span style="color:#E1E4E8">(R.id.progressBar);</span></span>
+<span class="line"><span style="color:#E1E4E8">        recyclerView </span><span style="color:#F97583">=</span><span style="color:#B392F0"> findViewById</span><span style="color:#E1E4E8">(R.id.recyclerView);</span></span>
+<span class="line"><span style="color:#E1E4E8">        errorTextView </span><span style="color:#F97583">=</span><span style="color:#B392F0"> findViewById</span><span style="color:#E1E4E8">(R.id.errorTextView);</span></span>
+<span class="line"><span style="color:#E1E4E8">        </span></span>
+<span class="line"><span style="color:#E1E4E8">        recyclerView.</span><span style="color:#B392F0">setLayoutManager</span><span style="color:#E1E4E8">(</span><span style="color:#F97583">new</span><span style="color:#B392F0"> LinearLayoutManager</span><span style="color:#E1E4E8">(</span><span style="color:#79B8FF">this</span><span style="color:#E1E4E8">));</span></span>
+<span class="line"><span style="color:#E1E4E8">        adapter </span><span style="color:#F97583">=</span><span style="color:#F97583"> new</span><span style="color:#B392F0"> UserAdapter</span><span style="color:#E1E4E8">();</span></span>
+<span class="line"><span style="color:#E1E4E8">        recyclerView.</span><span style="color:#B392F0">setAdapter</span><span style="color:#E1E4E8">(adapter);</span></span>
+<span class="line"><span style="color:#E1E4E8">        </span></span>
+<span class="line"><span style="color:#E1E4E8">        viewModel </span><span style="color:#F97583">=</span><span style="color:#F97583"> new</span><span style="color:#B392F0"> ViewModelProvider</span><span style="color:#E1E4E8">(</span><span style="color:#79B8FF">this</span><span style="color:#E1E4E8">).</span><span style="color:#B392F0">get</span><span style="color:#E1E4E8">(UserViewModel.class);</span></span>
+<span class="line"><span style="color:#E1E4E8">        </span></span>
+<span class="line"><span style="color:#6A737D">        // Observe loading state</span></span>
+<span class="line"><span style="color:#E1E4E8">        viewModel.</span><span style="color:#B392F0">getIsLoading</span><span style="color:#E1E4E8">().</span><span style="color:#B392F0">observe</span><span style="color:#E1E4E8">(</span><span style="color:#79B8FF">this</span><span style="color:#E1E4E8">, isLoading </span><span style="color:#F97583">-></span><span style="color:#E1E4E8"> {</span></span>
+<span class="line"><span style="color:#E1E4E8">            progressBar.</span><span style="color:#B392F0">setVisibility</span><span style="color:#E1E4E8">(isLoading </span><span style="color:#F97583">?</span><span style="color:#E1E4E8"> View.VISIBLE </span><span style="color:#F97583">:</span><span style="color:#E1E4E8"> View.GONE);</span></span>
+<span class="line"><span style="color:#E1E4E8">        });</span></span>
+<span class="line"><span style="color:#E1E4E8">        </span></span>
+<span class="line"><span style="color:#6A737D">        // Observe users data</span></span>
+<span class="line"><span style="color:#E1E4E8">        viewModel.</span><span style="color:#B392F0">getUsers</span><span style="color:#E1E4E8">().</span><span style="color:#B392F0">observe</span><span style="color:#E1E4E8">(</span><span style="color:#79B8FF">this</span><span style="color:#E1E4E8">, users </span><span style="color:#F97583">-></span><span style="color:#E1E4E8"> {</span></span>
+<span class="line"><span style="color:#E1E4E8">            adapter.</span><span style="color:#B392F0">setUsers</span><span style="color:#E1E4E8">(users);</span></span>
+<span class="line"><span style="color:#E1E4E8">            recyclerView.</span><span style="color:#B392F0">setVisibility</span><span style="color:#E1E4E8">(View.VISIBLE);</span></span>
+<span class="line"><span style="color:#E1E4E8">            errorTextView.</span><span style="color:#B392F0">setVisibility</span><span style="color:#E1E4E8">(View.GONE);</span></span>
+<span class="line"><span style="color:#E1E4E8">        });</span></span>
+<span class="line"><span style="color:#E1E4E8">        </span></span>
+<span class="line"><span style="color:#6A737D">        // Observe error state</span></span>
+<span class="line"><span style="color:#E1E4E8">        viewModel.</span><span style="color:#B392F0">getError</span><span style="color:#E1E4E8">().</span><span style="color:#B392F0">observe</span><span style="color:#E1E4E8">(</span><span style="color:#79B8FF">this</span><span style="color:#E1E4E8">, errorMessage </span><span style="color:#F97583">-></span><span style="color:#E1E4E8"> {</span></span>
+<span class="line"><span style="color:#E1E4E8">            errorTextView.</span><span style="color:#B392F0">setText</span><span style="color:#E1E4E8">(errorMessage);</span></span>
+<span class="line"><span style="color:#E1E4E8">            errorTextView.</span><span style="color:#B392F0">setVisibility</span><span style="color:#E1E4E8">(View.VISIBLE);</span></span>
+<span class="line"><span style="color:#E1E4E8">            recyclerView.</span><span style="color:#B392F0">setVisibility</span><span style="color:#E1E4E8">(View.GONE);</span></span>
+<span class="line"><span style="color:#E1E4E8">        });</span></span>
+<span class="line"><span style="color:#E1E4E8">        </span></span>
+<span class="line"><span style="color:#6A737D">        // Fetch data</span></span>
+<span class="line"><span style="color:#E1E4E8">        viewModel.</span><span style="color:#B392F0">fetchUsers</span><span style="color:#E1E4E8">();</span></span>
+<span class="line"><span style="color:#E1E4E8">    }</span></span>
+<span class="line"><span style="color:#E1E4E8">}</span></span></code></pre>
+<h2 id="caching-strategies">Caching Strategies</h2>
+<p>Implement caching to improve performance and reduce network requests:</p>
+<h3 id="1-okhttp-caching">1. OkHttp Caching</h3>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8; overflow-x: auto;" tabindex="0" data-language="java"><code><span class="line"><span style="color:#F97583">private</span><span style="color:#B392F0"> RetrofitClient</span><span style="color:#E1E4E8">() {</span></span>
+<span class="line"><span style="color:#E1E4E8">    File cacheDir </span><span style="color:#F97583">=</span><span style="color:#F97583"> new</span><span style="color:#B392F0"> File</span><span style="color:#E1E4E8">(context.</span><span style="color:#B392F0">getCacheDir</span><span style="color:#E1E4E8">(), </span><span style="color:#9ECBFF">"http-cache"</span><span style="color:#E1E4E8">);</span></span>
+<span class="line"><span style="color:#E1E4E8">    Cache cache </span><span style="color:#F97583">=</span><span style="color:#F97583"> new</span><span style="color:#B392F0"> Cache</span><span style="color:#E1E4E8">(cacheDir, </span><span style="color:#79B8FF">10</span><span style="color:#F97583"> *</span><span style="color:#79B8FF"> 1024</span><span style="color:#F97583"> *</span><span style="color:#79B8FF"> 1024</span><span style="color:#E1E4E8">); </span><span style="color:#6A737D">// 10 MB cache</span></span>
+<span class="line"><span style="color:#E1E4E8">    </span></span>
+<span class="line"><span style="color:#E1E4E8">    OkHttpClient.Builder httpClient </span><span style="color:#F97583">=</span><span style="color:#F97583"> new</span><span style="color:#E1E4E8"> OkHttpClient.</span><span style="color:#B392F0">Builder</span><span style="color:#E1E4E8">()</span></span>
+<span class="line"><span style="color:#E1E4E8">            .</span><span style="color:#B392F0">cache</span><span style="color:#E1E4E8">(cache)</span></span>
+<span class="line"><span style="color:#E1E4E8">            .</span><span style="color:#B392F0">addInterceptor</span><span style="color:#E1E4E8">(</span><span style="color:#F97583">new</span><span style="color:#B392F0"> Interceptor</span><span style="color:#E1E4E8">() {</span></span>
+<span class="line"><span style="color:#E1E4E8">                @</span><span style="color:#F97583">Override</span></span>
+<span class="line"><span style="color:#F97583">                public</span><span style="color:#E1E4E8"> Response </span><span style="color:#B392F0">intercept</span><span style="color:#E1E4E8">(Chain </span><span style="color:#FFAB70">chain</span><span style="color:#E1E4E8">) </span><span style="color:#F97583">throws</span><span style="color:#E1E4E8"> IOException {</span></span>
+<span class="line"><span style="color:#E1E4E8">                    Request originalRequest </span><span style="color:#F97583">=</span><span style="color:#E1E4E8"> chain.</span><span style="color:#B392F0">request</span><span style="color:#E1E4E8">();</span></span>
+<span class="line"><span style="color:#E1E4E8">                    </span></span>
+<span class="line"><span style="color:#6A737D">                    // Add cache control headers based on network availability</span></span>
+<span class="line"><span style="color:#E1E4E8">                    String cacheControl;</span></span>
+<span class="line"><span style="color:#F97583">                    if</span><span style="color:#E1E4E8"> (</span><span style="color:#B392F0">isNetworkAvailable</span><span style="color:#E1E4E8">()) {</span></span>
+<span class="line"><span style="color:#E1E4E8">                        cacheControl </span><span style="color:#F97583">=</span><span style="color:#9ECBFF"> "public, max-age=60"</span><span style="color:#E1E4E8">; </span><span style="color:#6A737D">// Cache for 1 minute</span></span>
+<span class="line"><span style="color:#E1E4E8">                    } </span><span style="color:#F97583">else</span><span style="color:#E1E4E8"> {</span></span>
+<span class="line"><span style="color:#E1E4E8">                        cacheControl </span><span style="color:#F97583">=</span><span style="color:#9ECBFF"> "public, only-if-cached, max-stale=3600"</span><span style="color:#E1E4E8">;</span></span>
+<span class="line"><span style="color:#E1E4E8">                    }</span></span>
+<span class="line"><span style="color:#E1E4E8">                    </span></span>
+<span class="line"><span style="color:#E1E4E8">                    Request request </span><span style="color:#F97583">=</span><span style="color:#E1E4E8"> originalRequest.</span><span style="color:#B392F0">newBuilder</span><span style="color:#E1E4E8">()</span></span>
+<span class="line"><span style="color:#E1E4E8">                            .</span><span style="color:#B392F0">header</span><span style="color:#E1E4E8">(</span><span style="color:#9ECBFF">"Cache-Control"</span><span style="color:#E1E4E8">, cacheControl)</span></span>
+<span class="line"><span style="color:#E1E4E8">                            .</span><span style="color:#B392F0">build</span><span style="color:#E1E4E8">();</span></span>
+<span class="line"><span style="color:#E1E4E8">                    </span></span>
+<span class="line"><span style="color:#F97583">                    return</span><span style="color:#E1E4E8"> chain.</span><span style="color:#B392F0">proceed</span><span style="color:#E1E4E8">(request);</span></span>
+<span class="line"><span style="color:#E1E4E8">                }</span></span>
+<span class="line"><span style="color:#E1E4E8">            });</span></span>
+<span class="line"><span style="color:#E1E4E8">    </span></span>
+<span class="line"><span style="color:#6A737D">    // Rest of the RetrofitClient setup</span></span>
+<span class="line"><span style="color:#E1E4E8">}</span></span></code></pre>
+<h3 id="2-room-database-for-offline-caching">2. Room Database for Offline Caching</h3>
+<p>For more robust offline support, use Room to store API responses.</p>
+<p>Define an entity:</p>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8; overflow-x: auto;" tabindex="0" data-language="java"><code><span class="line"><span style="color:#E1E4E8">@</span><span style="color:#F97583">Entity</span><span style="color:#E1E4E8">(</span><span style="color:#79B8FF">tableName</span><span style="color:#F97583"> =</span><span style="color:#9ECBFF"> "users"</span><span style="color:#E1E4E8">)</span></span>
+<span class="line"><span style="color:#F97583">public</span><span style="color:#F97583"> class</span><span style="color:#B392F0"> UserEntity</span><span style="color:#E1E4E8"> {</span></span>
+<span class="line"><span style="color:#E1E4E8">    @</span><span style="color:#F97583">PrimaryKey</span></span>
+<span class="line"><span style="color:#F97583">    private</span><span style="color:#F97583"> int</span><span style="color:#E1E4E8"> id;</span></span>
+<span class="line"><span style="color:#F97583">    private</span><span style="color:#E1E4E8"> String name;</span></span>
+<span class="line"><span style="color:#F97583">    private</span><span style="color:#E1E4E8"> String email;</span></span>
+<span class="line"><span style="color:#E1E4E8">    </span></span>
+<span class="line"><span style="color:#6A737D">    // Getters and setters</span></span>
+<span class="line"><span style="color:#E1E4E8">}</span></span></code></pre>
+<p>Create a DAO:</p>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8; overflow-x: auto;" tabindex="0" data-language="java"><code><span class="line"><span style="color:#E1E4E8">@</span><span style="color:#F97583">Dao</span></span>
+<span class="line"><span style="color:#F97583">public</span><span style="color:#F97583"> interface</span><span style="color:#B392F0"> UserDao</span><span style="color:#E1E4E8"> {</span></span>
+<span class="line"><span style="color:#E1E4E8">    @</span><span style="color:#F97583">Insert</span><span style="color:#E1E4E8">(</span><span style="color:#79B8FF">onConflict</span><span style="color:#F97583"> =</span><span style="color:#E1E4E8"> OnConflictStrategy.REPLACE)</span></span>
+<span class="line"><span style="color:#F97583">    void</span><span style="color:#B392F0"> insertUsers</span><span style="color:#E1E4E8">(List&#x3C;</span><span style="color:#F97583">UserEntity</span><span style="color:#E1E4E8">> </span><span style="color:#FFAB70">users</span><span style="color:#E1E4E8">);</span></span>
+<span class="line"><span style="color:#E1E4E8">    </span></span>
+<span class="line"><span style="color:#E1E4E8">    @</span><span style="color:#F97583">Query</span><span style="color:#E1E4E8">(</span><span style="color:#9ECBFF">"SELECT * FROM users"</span><span style="color:#E1E4E8">)</span></span>
+<span class="line"><span style="color:#E1E4E8">    List&#x3C;</span><span style="color:#F97583">UserEntity</span><span style="color:#E1E4E8">> </span><span style="color:#B392F0">getAllUsers</span><span style="color:#E1E4E8">();</span></span>
+<span class="line"><span style="color:#E1E4E8">    </span></span>
+<span class="line"><span style="color:#E1E4E8">    @</span><span style="color:#F97583">Query</span><span style="color:#E1E4E8">(</span><span style="color:#9ECBFF">"DELETE FROM users"</span><span style="color:#E1E4E8">)</span></span>
+<span class="line"><span style="color:#F97583">    void</span><span style="color:#B392F0"> deleteAllUsers</span><span style="color:#E1E4E8">();</span></span>
+<span class="line"><span style="color:#E1E4E8">}</span></span></code></pre>
+<p>Create the database:</p>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8; overflow-x: auto;" tabindex="0" data-language="java"><code><span class="line"><span style="color:#E1E4E8">@</span><span style="color:#F97583">Database</span><span style="color:#E1E4E8">(</span><span style="color:#79B8FF">entities</span><span style="color:#F97583"> =</span><span style="color:#E1E4E8"> {UserEntity.class}, </span><span style="color:#79B8FF">version</span><span style="color:#F97583"> =</span><span style="color:#79B8FF"> 1</span><span style="color:#E1E4E8">)</span></span>
+<span class="line"><span style="color:#F97583">public</span><span style="color:#F97583"> abstract</span><span style="color:#F97583"> class</span><span style="color:#B392F0"> AppDatabase</span><span style="color:#F97583"> extends</span><span style="color:#B392F0"> RoomDatabase</span><span style="color:#E1E4E8"> {</span></span>
+<span class="line"><span style="color:#F97583">    private</span><span style="color:#F97583"> static</span><span style="color:#E1E4E8"> AppDatabase instance;</span></span>
+<span class="line"><span style="color:#E1E4E8">    </span></span>
+<span class="line"><span style="color:#F97583">    public</span><span style="color:#F97583"> abstract</span><span style="color:#E1E4E8"> UserDao </span><span style="color:#B392F0">userDao</span><span style="color:#E1E4E8">();</span></span>
+<span class="line"><span style="color:#E1E4E8">    </span></span>
+<span class="line"><span style="color:#F97583">    public</span><span style="color:#F97583"> static</span><span style="color:#F97583"> synchronized</span><span style="color:#E1E4E8"> AppDatabase </span><span style="color:#B392F0">getInstance</span><span style="color:#E1E4E8">(Context </span><span style="color:#FFAB70">context</span><span style="color:#E1E4E8">) {</span></span>
+<span class="line"><span style="color:#F97583">        if</span><span style="color:#E1E4E8"> (instance </span><span style="color:#F97583">==</span><span style="color:#79B8FF"> null</span><span style="color:#E1E4E8">) {</span></span>
+<span class="line"><span style="color:#E1E4E8">            instance </span><span style="color:#F97583">=</span><span style="color:#E1E4E8"> Room.</span><span style="color:#B392F0">databaseBuilder</span><span style="color:#E1E4E8">(</span></span>
+<span class="line"><span style="color:#E1E4E8">                    context.</span><span style="color:#B392F0">getApplicationContext</span><span style="color:#E1E4E8">(),</span></span>
+<span class="line"><span style="color:#E1E4E8">                    AppDatabase.class,</span></span>
+<span class="line"><span style="color:#9ECBFF">                    "app_database"</span><span style="color:#E1E4E8">)</span></span>
+<span class="line"><span style="color:#E1E4E8">                    .</span><span style="color:#B392F0">build</span><span style="color:#E1E4E8">();</span></span>
+<span class="line"><span style="color:#E1E4E8">        }</span></span>
+<span class="line"><span style="color:#F97583">        return</span><span style="color:#E1E4E8"> instance;</span></span>
+<span class="line"><span style="color:#E1E4E8">    }</span></span>
+<span class="line"><span style="color:#E1E4E8">}</span></span></code></pre>
+<p>Create a repository to handle data from both network and local storage:</p>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8; overflow-x: auto;" tabindex="0" data-language="java"><code><span class="line"><span style="color:#F97583">public</span><span style="color:#F97583"> class</span><span style="color:#B392F0"> UserRepository</span><span style="color:#E1E4E8"> {</span></span>
+<span class="line"><span style="color:#F97583">    private</span><span style="color:#E1E4E8"> ApiService apiService;</span></span>
+<span class="line"><span style="color:#F97583">    private</span><span style="color:#E1E4E8"> UserDao userDao;</span></span>
+<span class="line"><span style="color:#F97583">    private</span><span style="color:#E1E4E8"> Context context;</span></span>
+<span class="line"><span style="color:#E1E4E8">    </span></span>
+<span class="line"><span style="color:#F97583">    public</span><span style="color:#B392F0"> UserRepository</span><span style="color:#E1E4E8">(Context </span><span style="color:#FFAB70">context</span><span style="color:#E1E4E8">) {</span></span>
+<span class="line"><span style="color:#79B8FF">        this</span><span style="color:#E1E4E8">.context </span><span style="color:#F97583">=</span><span style="color:#E1E4E8"> context;</span></span>
+<span class="line"><span style="color:#E1E4E8">        apiService </span><span style="color:#F97583">=</span><span style="color:#E1E4E8"> RetrofitClient.</span><span style="color:#B392F0">getInstance</span><span style="color:#E1E4E8">().</span><span style="color:#B392F0">getApiService</span><span style="color:#E1E4E8">();</span></span>
+<span class="line"><span style="color:#E1E4E8">        userDao </span><span style="color:#F97583">=</span><span style="color:#E1E4E8"> AppDatabase.</span><span style="color:#B392F0">getInstance</span><span style="color:#E1E4E8">(context).</span><span style="color:#B392F0">userDao</span><span style="color:#E1E4E8">();</span></span>
+<span class="line"><span style="color:#E1E4E8">    }</span></span>
+<span class="line"><span style="color:#E1E4E8">    </span></span>
+<span class="line"><span style="color:#F97583">    public</span><span style="color:#E1E4E8"> Observable&#x3C;List&#x3C;</span><span style="color:#F97583">User</span><span style="color:#E1E4E8">>> </span><span style="color:#B392F0">getUsers</span><span style="color:#E1E4E8">() {</span></span>
+<span class="line"><span style="color:#F97583">        return</span><span style="color:#E1E4E8"> Observable.</span><span style="color:#B392F0">concatArrayEager</span><span style="color:#E1E4E8">(</span></span>
+<span class="line"><span style="color:#B392F0">                getUsersFromDb</span><span style="color:#E1E4E8">(),</span></span>
+<span class="line"><span style="color:#B392F0">                getUsersFromApi</span><span style="color:#E1E4E8">());</span></span>
+<span class="line"><span style="color:#E1E4E8">    }</span></span>
+<span class="line"><span style="color:#E1E4E8">    </span></span>
+<span class="line"><span style="color:#F97583">    private</span><span style="color:#E1E4E8"> Observable&#x3C;List&#x3C;</span><span style="color:#F97583">User</span><span style="color:#E1E4E8">>> </span><span style="color:#B392F0">getUsersFromDb</span><span style="color:#E1E4E8">() {</span></span>
+<span class="line"><span style="color:#F97583">        return</span><span style="color:#E1E4E8"> Observable.</span><span style="color:#B392F0">fromCallable</span><span style="color:#E1E4E8">(() </span><span style="color:#F97583">-></span><span style="color:#E1E4E8"> {</span></span>
+<span class="line"><span style="color:#E1E4E8">            List&#x3C;</span><span style="color:#F97583">UserEntity</span><span style="color:#E1E4E8">> userEntities </span><span style="color:#F97583">=</span><span style="color:#E1E4E8"> userDao.</span><span style="color:#B392F0">getAllUsers</span><span style="color:#E1E4E8">();</span></span>
+<span class="line"><span style="color:#E1E4E8">            List&#x3C;</span><span style="color:#F97583">User</span><span style="color:#E1E4E8">> users </span><span style="color:#F97583">=</span><span style="color:#F97583"> new</span><span style="color:#E1E4E8"> ArrayList&#x3C;>();</span></span>
+<span class="line"><span style="color:#E1E4E8">            </span></span>
+<span class="line"><span style="color:#F97583">            for</span><span style="color:#E1E4E8"> (UserEntity entity </span><span style="color:#F97583">:</span><span style="color:#E1E4E8"> userEntities) {</span></span>
+<span class="line"><span style="color:#E1E4E8">                User user </span><span style="color:#F97583">=</span><span style="color:#F97583"> new</span><span style="color:#B392F0"> User</span><span style="color:#E1E4E8">();</span></span>
+<span class="line"><span style="color:#E1E4E8">                user.</span><span style="color:#B392F0">setId</span><span style="color:#E1E4E8">(entity.</span><span style="color:#B392F0">getId</span><span style="color:#E1E4E8">());</span></span>
+<span class="line"><span style="color:#E1E4E8">                user.</span><span style="color:#B392F0">setName</span><span style="color:#E1E4E8">(entity.</span><span style="color:#B392F0">getName</span><span style="color:#E1E4E8">());</span></span>
+<span class="line"><span style="color:#E1E4E8">                user.</span><span style="color:#B392F0">setEmail</span><span style="color:#E1E4E8">(entity.</span><span style="color:#B392F0">getEmail</span><span style="color:#E1E4E8">());</span></span>
+<span class="line"><span style="color:#E1E4E8">                users.</span><span style="color:#B392F0">add</span><span style="color:#E1E4E8">(user);</span></span>
+<span class="line"><span style="color:#E1E4E8">            }</span></span>
+<span class="line"><span style="color:#E1E4E8">            </span></span>
+<span class="line"><span style="color:#F97583">            return</span><span style="color:#E1E4E8"> users;</span></span>
+<span class="line"><span style="color:#E1E4E8">        }).</span><span style="color:#B392F0">subscribeOn</span><span style="color:#E1E4E8">(Schedulers.</span><span style="color:#B392F0">io</span><span style="color:#E1E4E8">());</span></span>
+<span class="line"><span style="color:#E1E4E8">    }</span></span>
+<span class="line"><span style="color:#E1E4E8">    </span></span>
+<span class="line"><span style="color:#F97583">    private</span><span style="color:#E1E4E8"> Observable&#x3C;List&#x3C;</span><span style="color:#F97583">User</span><span style="color:#E1E4E8">>> </span><span style="color:#B392F0">getUsersFromApi</span><span style="color:#E1E4E8">() {</span></span>
+<span class="line"><span style="color:#F97583">        return</span><span style="color:#E1E4E8"> apiService.</span><span style="color:#B392F0">getUsersRx</span><span style="color:#E1E4E8">()</span></span>
+<span class="line"><span style="color:#E1E4E8">                .</span><span style="color:#B392F0">doOnNext</span><span style="color:#E1E4E8">(users </span><span style="color:#F97583">-></span><span style="color:#E1E4E8"> {</span></span>
+<span class="line"><span style="color:#B392F0">                    storeUsersInDb</span><span style="color:#E1E4E8">(users);</span></span>
+<span class="line"><span style="color:#E1E4E8">                })</span></span>
+<span class="line"><span style="color:#E1E4E8">                .</span><span style="color:#B392F0">subscribeOn</span><span style="color:#E1E4E8">(Schedulers.</span><span style="color:#B392F0">io</span><span style="color:#E1E4E8">());</span></span>
+<span class="line"><span style="color:#E1E4E8">    }</span></span>
+<span class="line"><span style="color:#E1E4E8">    </span></span>
+<span class="line"><span style="color:#F97583">    private</span><span style="color:#F97583"> void</span><span style="color:#B392F0"> storeUsersInDb</span><span style="color:#E1E4E8">(List&#x3C;</span><span style="color:#F97583">User</span><span style="color:#E1E4E8">> </span><span style="color:#FFAB70">users</span><span style="color:#E1E4E8">) {</span></span>
+<span class="line"><span style="color:#E1E4E8">        List&#x3C;</span><span style="color:#F97583">UserEntity</span><span style="color:#E1E4E8">> userEntities </span><span style="color:#F97583">=</span><span style="color:#F97583"> new</span><span style="color:#E1E4E8"> ArrayList&#x3C;>();</span></span>
+<span class="line"><span style="color:#E1E4E8">        </span></span>
+<span class="line"><span style="color:#F97583">        for</span><span style="color:#E1E4E8"> (User user </span><span style="color:#F97583">:</span><span style="color:#E1E4E8"> users) {</span></span>
+<span class="line"><span style="color:#E1E4E8">            UserEntity entity </span><span style="color:#F97583">=</span><span style="color:#F97583"> new</span><span style="color:#B392F0"> UserEntity</span><span style="color:#E1E4E8">();</span></span>
+<span class="line"><span style="color:#E1E4E8">            entity.</span><span style="color:#B392F0">setId</span><span style="color:#E1E4E8">(user.</span><span style="color:#B392F0">getId</span><span style="color:#E1E4E8">());</span></span>
+<span class="line"><span style="color:#E1E4E8">            entity.</span><span style="color:#B392F0">setName</span><span style="color:#E1E4E8">(user.</span><span style="color:#B392F0">getName</span><span style="color:#E1E4E8">());</span></span>
+<span class="line"><span style="color:#E1E4E8">            entity.</span><span style="color:#B392F0">setEmail</span><span style="color:#E1E4E8">(user.</span><span style="color:#B392F0">getEmail</span><span style="color:#E1E4E8">());</span></span>
+<span class="line"><span style="color:#E1E4E8">            userEntities.</span><span style="color:#B392F0">add</span><span style="color:#E1E4E8">(entity);</span></span>
+<span class="line"><span style="color:#E1E4E8">        }</span></span>
+<span class="line"><span style="color:#E1E4E8">        </span></span>
+<span class="line"><span style="color:#E1E4E8">        userDao.</span><span style="color:#B392F0">deleteAllUsers</span><span style="color:#E1E4E8">();</span></span>
+<span class="line"><span style="color:#E1E4E8">        userDao.</span><span style="color:#B392F0">insertUsers</span><span style="color:#E1E4E8">(userEntities);</span></span>
+<span class="line"><span style="color:#E1E4E8">    }</span></span>
+<span class="line"><span style="color:#E1E4E8">}</span></span></code></pre> </div> </div> <div class="post-navigation" data-astro-cid-4sn4zg3r>  <a href="/blog" class="nav-home" data-astro-cid-4sn4zg3r> <span class="prompt" data-astro-cid-4sn4zg3r>$</span> cd ~/blog
+</a> <a href="/blog/android-architecture-guide" class="nav-next" data-astro-cid-4sn4zg3r> <span class="nav-label" data-astro-cid-4sn4zg3r><span class="prompt" data-astro-cid-4sn4zg3r>$</span> cd next</span> <span class="nav-title" data-astro-cid-4sn4zg3r>Modern Multi-Screen Android Architecture Guide Using Java</span> </a> </div> </article>  </main> </div> <style>astro-island,astro-slot,astro-static-slot{display:contents}</style><script>(()=>{var e=async t=>{await(await t())()};(self.Astro||(self.Astro={})).load=e;window.dispatchEvent(new Event("astro:load"));})();;(()=>{var A=Object.defineProperty;var g=(i,o,a)=>o in i?A(i,o,{enumerable:!0,configurable:!0,writable:!0,value:a}):i[o]=a;var d=(i,o,a)=>g(i,typeof o!="symbol"?o+"":o,a);{let i={0:t=>m(t),1:t=>a(t),2:t=>new RegExp(t),3:t=>new Date(t),4:t=>new Map(a(t)),5:t=>new Set(a(t)),6:t=>BigInt(t),7:t=>new URL(t),8:t=>new Uint8Array(t),9:t=>new Uint16Array(t),10:t=>new Uint32Array(t),11:t=>1/0*t},o=t=>{let[l,e]=t;return l in i?i[l](e):void 0},a=t=>t.map(o),m=t=>typeof t!="object"||t===null?t:Object.fromEntries(Object.entries(t).map(([l,e])=>[l,o(e)]));class y extends HTMLElement{constructor(){super(...arguments);d(this,"Component");d(this,"hydrator");d(this,"hydrate",async()=>{var b;if(!this.hydrator||!this.isConnected)return;let e=(b=this.parentElement)==null?void 0:b.closest("astro-island[ssr]");if(e){e.addEventListener("astro:hydrate",this.hydrate,{once:!0});return}let c=this.querySelectorAll("astro-slot"),n={},h=this.querySelectorAll("template[data-astro-template]");for(let r of h){let s=r.closest(this.tagName);s!=null&&s.isSameNode(this)&&(n[r.getAttribute("data-astro-template")||"default"]=r.innerHTML,r.remove())}for(let r of c){let s=r.closest(this.tagName);s!=null&&s.isSameNode(this)&&(n[r.getAttribute("name")||"default"]=r.innerHTML)}let p;try{p=this.hasAttribute("props")?m(JSON.parse(this.getAttribute("props"))):{}}catch(r){let s=this.getAttribute("component-url")||"<unknown>",v=this.getAttribute("component-export");throw v&&(s+=` (export ${v})`),console.error(`[hydrate] Error parsing props for component ${s}`,this.getAttribute("props"),r),r}let u;await this.hydrator(this)(this.Component,p,n,{client:this.getAttribute("client")}),this.removeAttribute("ssr"),this.dispatchEvent(new CustomEvent("astro:hydrate"))});d(this,"unmount",()=>{this.isConnected||this.dispatchEvent(new CustomEvent("astro:unmount"))})}disconnectedCallback(){document.removeEventListener("astro:after-swap",this.unmount),document.addEventListener("astro:after-swap",this.unmount,{once:!0})}connectedCallback(){if(!this.hasAttribute("await-children")||document.readyState==="interactive"||document.readyState==="complete")this.childrenConnectedCallback();else{let e=()=>{document.removeEventListener("DOMContentLoaded",e),c.disconnect(),this.childrenConnectedCallback()},c=new MutationObserver(()=>{var n;((n=this.lastChild)==null?void 0:n.nodeType)===Node.COMMENT_NODE&&this.lastChild.nodeValue==="astro:end"&&(this.lastChild.remove(),e())});c.observe(this,{childList:!0}),document.addEventListener("DOMContentLoaded",e)}}async childrenConnectedCallback(){let e=this.getAttribute("before-hydration-url");e&&await import(e),this.start()}async start(){let e=JSON.parse(this.getAttribute("opts")),c=this.getAttribute("client");if(Astro[c]===void 0){window.addEventListener(`astro:${c}`,()=>this.start(),{once:!0});return}try{await Astro[c](async()=>{let n=this.getAttribute("renderer-url"),[h,{default:p}]=await Promise.all([import(this.getAttribute("component-url")),n?import(n):()=>()=>{}]),u=this.getAttribute("component-export")||"default";if(!u.includes("."))this.Component=h[u];else{this.Component=h;for(let f of u.split("."))this.Component=this.Component[f]}return this.hydrator=p,this.hydrate},e,this)}catch(n){console.error(`[astro-island] Error hydrating ${this.getAttribute("component-url")}`,n)}}attributeChangedCallback(){this.hydrate()}}d(y,"observedAttributes",["props"]),customElements.get("astro-island")||customElements.define("astro-island",y)}})();</script><astro-island uid="1lalxh" prefix="r0" component-url="/_astro/Terminal.B48kxAFY.js" component-export="default" renderer-url="/_astro/client.BO3Rm8ny.js" props="{}" ssr client="load" opts="{&quot;name&quot;:&quot;Terminal&quot;,&quot;value&quot;:true}" await-children><div class="terminal-container terminal-open"><div class="terminal-header"><div class="terminal-title">Terminal</div><div class="terminal-controls"><span class="terminal-minimize"></span><span class="terminal-maximize"></span><span class="terminal-close"></span></div></div><div class="terminal-body"><div class="terminal-welcome">Welcome to a terminal@pnbe! Type &#x27;help&#x27; for available commands. You can navigate the entire site using this terminal (or at least that&#x27;s the idea).</div><div class="terminal-input-line"><span class="terminal-prompt">guest@terminal:~$ </span><input type="text" class="terminal-input" value=""/></div></div></div><!--astro:end--></astro-island> <astro-island uid="ZBzTnl" prefix="r1" component-url="/_astro/ToggleTerminal.biyOownL.js" component-export="default" renderer-url="/_astro/client.BO3Rm8ny.js" props="{}" ssr client="load" opts="{&quot;name&quot;:&quot;ToggleTerminal&quot;,&quot;value&quot;:true}" await-children><button class="terminal-toggle" aria-label="Toggle Terminal">Terminal <span class="shortcut">(Ctrl+`)</span></button><!--astro:end--></astro-island> </div> <script type="module">document.addEventListener("keydown",e=>{e.ctrlKey&&e.key==="`"&&(document.querySelector(".terminal-container").classList.toggle("terminal-open"),e.preventDefault())});</script> </body> </html> 

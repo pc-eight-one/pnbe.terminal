@@ -1,0 +1,254 @@
+---
+import MainLayout from '../layouts/MainLayout.astro';
+---
+
+<MainLayout title="Contact">
+    <div class="contact-container">
+        <h1><span class="prompt">~/contact</span> Get In Touch</h1>
+
+        <p class="intro">
+            Feel free to reach out with questions, project ideas, or just to say hello!
+        </p>
+
+        <div class="contact-methods">
+            <div class="contact-card email">
+                <div class="contact-icon">@</div>
+                <h2>Email</h2>
+                <p>The most reliable way to reach me</p>
+                <a href="mailto:admin@pnbe.in" class="contact-link">admin@pnbe.in</a>
+            </div>
+
+            <div class="contact-card social">
+                <div class="contact-icon">#</div>
+                <h2>Social</h2>
+                <p>Connect with me on these platforms</p>
+                <div class="social-links">
+                    <a href="https://github.com/pc-eight-one" class="social-link">GitHub</a>
+                    <a href="https://stackoverflow.com/users/5602214/prashant" class="social-link">Stackoverflow</a>
+                    <a href="https://twitter.com/prashantnix" class="social-link">Twitter</a>
+                </div>
+            </div>
+        </div>
+
+        <div class="contact-form-container">
+            <h2><span class="prompt">$</span> send_message.sh</h2>
+
+            <form class="contact-form" name="contact" method="POST" data-netlify="true">
+                <div class="form-group">
+                    <label for="name">
+                        <span class="prompt">$</span> NAME=
+                    </label>
+                    <input type="text" id="name" name="name" required />
+                </div>
+
+                <div class="form-group">
+                    <label for="email">
+                        <span class="prompt">$</span> EMAIL=
+                    </label>
+                    <input type="email" id="email" name="email" required />
+                </div>
+
+                <div class="form-group">
+                    <label for="subject">
+                        <span class="prompt">$</span> SUBJECT=
+                    </label>
+                    <input type="text" id="subject" name="subject" required />
+                </div>
+
+                <div class="form-group full-width">
+                    <label for="message">
+                        <span class="prompt">$</span> cat > MESSAGE.txt
+                    </label>
+                    <textarea id="message" name="message" rows="6" required></textarea>
+                </div>
+
+                <button type="submit" class="submit-button">
+                    <span class="prompt">$</span> ./send_message.sh
+                </button>
+            </form>
+
+            <div class="terminal-output">
+        <pre>
+$ whoami
+visitor
+
+$ ping -c 1 contact@pnbe.in
+PING contact@pnbe.in: 56 data bytes
+64 bytes from contact@pnbe.in: icmp_seq=0 ttl=64 time=1.2 ms
+--- contact@pnbe.in ping statistics ---
+1 packets transmitted, 1 packets received, 0.0% packet loss
+round-trip min/avg/max/stddev = 1.2/1.2/1.2/0.0 ms
+
+$ echo "Looking forward to connecting!"
+Looking forward to connecting!</pre>
+            </div>
+        </div>
+    </div>
+</MainLayout>
+
+<style>
+    .contact-container {
+        max-width: 800px;
+    }
+
+    .prompt {
+        color: var(--ctp-green);
+        font-weight: bold;
+    }
+
+    .intro {
+        margin-bottom: 2rem;
+    }
+
+    .contact-methods {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+        gap: 2rem;
+        margin: 2rem 0;
+    }
+
+    .contact-card {
+        background: var(--ctp-surface0);
+        border-radius: 8px;
+        padding: 2rem;
+        text-align: center;
+        transition: transform 0.3s;
+    }
+
+    .contact-card:hover {
+        transform: translateY(-5px);
+    }
+
+    .contact-icon {
+        font-size: 2.5rem;
+        margin-bottom: 1rem;
+        color: var(--ctp-lavender);
+        font-weight: bold;
+    }
+
+    .contact-card h2 {
+        color: var(--ctp-blue);
+        margin-bottom: 0.5rem;
+    }
+
+    .contact-card p {
+        color: var(--ctp-subtext0);
+        margin-bottom: 1rem;
+    }
+
+    .contact-link {
+        color: var(--ctp-blue);
+        text-decoration: none;
+        font-weight: bold;
+    }
+
+    .contact-link:hover {
+        text-decoration: underline;
+    }
+
+    .social-links {
+        display: flex;
+        justify-content: center;
+        gap: 1rem;
+    }
+
+    .social-link {
+        color: var(--ctp-mauve);
+        text-decoration: none;
+        font-weight: bold;
+    }
+
+    .social-link:hover {
+        color: var(--ctp-pink);
+        text-decoration: underline;
+    }
+
+    .contact-form-container {
+        margin: 3rem 0;
+        background: var(--ctp-surface0);
+        border-radius: 8px;
+        padding: 2rem;
+    }
+
+    .contact-form {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 1.5rem;
+        margin: 2rem 0;
+    }
+
+    .form-group {
+        display: flex;
+        flex-direction: column;
+    }
+
+    .form-group.full-width {
+        grid-column: span 2;
+    }
+
+    label {
+        margin-bottom: 0.5rem;
+        font-family: 'JetBrains Mono', monospace;
+    }
+
+    input, textarea {
+        background: var(--ctp-crust);
+        border: 1px solid var(--ctp-surface1);
+        border-radius: 4px;
+        padding: 0.8rem;
+        color: var(--ctp-text);
+        font-family: 'JetBrains Mono', monospace;
+    }
+
+    input:focus, textarea:focus {
+        outline: none;
+        border-color: var(--ctp-blue);
+        box-shadow: 0 0 0 2px rgba(137, 180, 250, 0.3);
+    }
+
+    .submit-button {
+        grid-column: span 2;
+        background: var(--ctp-green);
+        color: var(--ctp-crust);
+        border: none;
+        border-radius: 4px;
+        padding: 0.8rem 1.5rem;
+        font-family: 'JetBrains Mono', monospace;
+        font-weight: bold;
+        cursor: pointer;
+        transition: background 0.2s;
+    }
+
+    .submit-button:hover {
+        background: var(--ctp-teal);
+    }
+
+    .terminal-output {
+        background-color: var(--ctp-crust);
+        border-radius: 5px;
+        padding: 1rem;
+        margin-top: 2rem;
+        font-family: 'JetBrains Mono', monospace;
+    }
+
+    .terminal-output pre {
+        margin: 0;
+        color: var(--ctp-text);
+        white-space: pre-wrap;
+    }
+
+    /* Responsive adjustments */
+    @media (max-width: 768px) {
+        .contact-form {
+            grid-template-columns: 1fr;
+        }
+
+        .form-group.full-width {
+            grid-column: span 1;
+        }
+
+        .submit-button {
+            grid-column: span 1;
+        }
+    }
+</style>

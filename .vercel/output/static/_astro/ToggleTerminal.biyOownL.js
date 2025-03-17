@@ -1,0 +1,1 @@
+import{j as e}from"./jsx-runtime.D_zvdyIk.js";import"./index.Dy6lLLXr.js";const a=()=>{const t=()=>{document.querySelector(".terminal-container").classList.toggle("terminal-open")};return e.jsxs("button",{className:"terminal-toggle",onClick:t,"aria-label":"Toggle Terminal",children:["Terminal ",e.jsx("span",{className:"shortcut",children:"(Ctrl+`)"})]})};export{a as default};
