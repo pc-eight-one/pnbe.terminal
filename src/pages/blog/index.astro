@@ -1,0 +1,172 @@
+---
+import MainLayout from '../../layouts/MainLayout.astro';
+import {getCollection} from 'astro:content';
+
+// Get all blog posts and sort by date
+const posts = await getCollection('blog');
+const sortedPosts = posts.sort(
+    (a, b) => new Date(b.data.pubDate).getTime() - new Date(a.data.pubDate).getTime()
+);
+---
+
+<MainLayout title="Blog">
+    <div class="blog-container">
+        <h1><span class="prompt">~/blog</span> Latest Posts</h1>
+
+        <p class="intro">
+            Thoughts, tutorials, and tech explorations. Browse posts below or use the terminal to navigate with <code>view-post
+            [id]</code>.
+        </p>
+
+        <div class="terminal-block terminal-output">
+      <pre>
+$ ls -la ~/blog
+total {sortedPosts.length}
+          {sortedPosts.map((post, index) => (
+              `[${post.slug}] ${post.data.title} - ${new Date(post.data.pubDate).toLocaleDateString()} - ${post.data.description}`
+          )).join('\n')}
+      </pre>
+        </div>
+
+        <div class="blog-grid">
+            {sortedPosts.map((post, index) => (
+                    <article class="blog-card">
+                        <div class="blog-meta">
+                            <span class="post-date">{new Date(post.data.pubDate).toLocaleDateString()}</span>
+                            <span class="post-id">ID: {post.slug}</span>
+                        </div>
+
+                        <h2 class="post-title">
+                            <a href={`/blog/${post.slug}`}>{post.data.title}</a>
+                        </h2>
+
+                        <p class="post-excerpt">{post.data.description}</p>
+
+                        <div class="post-tags">
+                            {post.data.tags.map(tag => (
+                                    <span class="post-tag">#{tag}</span>
+                            ))}
+                        </div>
+
+                        <a href={`/blog/${post.slug}`} class="read-more">
+                            <span class="prompt">$</span> cat ~/blog/{post.slug}
+                        </a>
+                    </article>
+            ))}
+        </div>
+    </div>
+</MainLayout>
+
+<style>
+    .blog-container {
+        max-width: 800px;
+    }
+
+    .prompt {
+        color: var(--ctp-green);
+        font-weight: bold;
+    }
+
+    .intro {
+        margin-bottom: 2rem;
+    }
+
+    .terminal-block {
+        margin: 2rem 0;
+        padding: 1.5rem;
+        border-radius: 5px;
+        background-color: var(--ctp-crust);
+    }
+
+    .terminal-output pre {
+        margin: 0;
+        white-space: pre-wrap;
+        font-family: 'JetBrains Mono', monospace;
+        font-size: 0.9rem;
+        color: var(--ctp-text);
+    }
+
+    .blog-grid {
+        display: grid;
+        grid-template-columns: 1fr;
+        gap: 2rem;
+        margin: 2rem 0;
+    }
+
+    .blog-card {
+        padding: 1.5rem;
+        border-radius: 8px;
+        background-color: var(--ctp-surface0);
+        transition: transform 0.3s;
+    }
+
+    .blog-card:hover {
+        transform: translateY(-5px);
+    }
+
+    .blog-meta {
+        display: flex;
+        justify-content: space-between;
+        margin-bottom: 1rem;
+        font-size: 0.9rem;
+        color: var(--ctp-subtext0);
+    }
+
+    .post-id {
+        font-family: 'JetBrains Mono', monospace;
+        color: var(--ctp-mauve);
+    }
+
+    .post-title {
+        margin-bottom: 1rem;
+    }
+
+    .post-title a {
+        color: var(--ctp-blue);
+        text-decoration: none;
+        transition: color 0.2s;
+    }
+
+    .post-title a:hover {
+        color: var(--ctp-lavender);
+    }
+
+    .post-excerpt {
+        margin-bottom: 1.5rem;
+        color: var(--ctp-subtext1);
+    }
+
+    .post-tags {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.5rem;
+        margin-bottom: 1.5rem;
+    }
+
+    .post-tag {
+        background-color: var(--ctp-surface1);
+        padding: 0.3rem 0.6rem;
+        border-radius: 4px;
+        font-size: 0.8rem;
+        color: var(--ctp-lavender);
+    }
+
+    .read-more {
+        display: inline-block;
+        font-family: 'JetBrains Mono', monospace;
+        color: var(--ctp-green);
+        text-decoration: none;
+        font-size: 0.9rem;
+        transition: color 0.2s;
+    }
+
+    .read-more:hover {
+        color: var(--ctp-teal);
+    }
+
+    @media (min-width: 768px) {
+        .blog-grid {
+            grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+        }
+    }
+</style>
